@@ -1,8 +1,9 @@
-﻿using Depra.Toolkit.SoundSystem.Runtime.Core;
+﻿using System;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-namespace Depra.SoundSystem.Core
+namespace Depra.Sound.Runtime.Effects
 {
     /// <summary>
     /// An abstraction over Unity's audio source component. It is used
@@ -27,21 +28,33 @@ namespace Depra.SoundSystem.Core
 
         private void UpdateSound()
         {
-            AudioSource.mute = !SoundPlayer.SoundEnabled;
+            AudioSource.mute = SoundPlayer.SoundEnabled == false;
         }
 
         public void Play(AudioClip clip, float volume)
         {
             if (clip == null)
             {
-                return;
+                throw new NullReferenceException("Audio clip is null!");
             }
             
             AudioSource.clip = clip;
             AudioSource.volume = volume;
-            AudioSource.Play();
             AudioSource.loop = false;
+            AudioSource.Play();
             
+            Invoke(nameof(KillSoundFx), clip.length + 0.1f);
+        }
+        
+        public void Play(AudioClip clip)
+        {
+            if (clip == null)
+            {
+                throw new NullReferenceException("Audio clip is null!");
+            }
+            
+            AudioSource.clip = clip;
+            AudioSource.Play();
             Invoke(nameof(KillSoundFx), clip.length + 0.1f);
         }
 
@@ -49,31 +62,18 @@ namespace Depra.SoundSystem.Core
         {
             if (clip == null)
             {
-                return;
+                throw new NullReferenceException("Audio clip is null!");
             }
             
             AudioSource.clip = clip;
             AudioSource.volume = volume;
             AudioSource.loop = true;
             AudioSource.Play();
-            //Invoke(nameof(KillSoundFx), clip.length + 0.1f);
         }
 
         public void StopLoop()
         {
             KillSoundFx();
-        }
-
-        public void Play(AudioClip clip)
-        {
-            if (clip == null)
-            {
-                return;
-            }
-            
-            AudioSource.clip = clip;
-            AudioSource.Play();
-            Invoke(nameof(KillSoundFx), clip.length + 0.1f);
         }
 
         private void KillSoundFx()
@@ -85,6 +85,11 @@ namespace Depra.SoundSystem.Core
         public void Reset()
         {
             AudioSource = GetComponent<AudioSource>();
+        }
+
+        private void OnValidate()
+        {
+            Assert.IsNotNull(AudioSource);
         }
     }
 }

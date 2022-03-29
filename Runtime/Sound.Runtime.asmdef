@@ -1,10 +1,12 @@
 {
-    "name": "Depra.SoundSystem.Runtime",
+    "name": "Depra.Sound.Runtime",
     "rootNamespace": "",
     "references": [
+        "GUID:764e421ee60e8124f9a950731dfe7c56",
         "GUID:7ce2bd8ae595cf2459e458b3a542d784",
         "GUID:146732467cca67f4a9bf8d4c48e2790a",
         "GUID:31976cc9e85bdd9459e856fcb40d0d50",
+        "GUID:49b49c76ee64f6b41bf28ef951cb0e50",
         "GUID:a344d304b73c12044bacde5ea024459c",
         "GUID:776d03a35f1b52c4a9aed9f56d7b4229"
     ],

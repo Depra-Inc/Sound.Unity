@@ -1,22 +1,33 @@
-﻿using Depra.Toolkit.Singletons;
-using Depra.Toolkit.Singletons.Runtime.Mono;
-using Depra.Toolkit.SoundSystem.Runtime.Core;
+﻿using Depra.Toolkit.Singletons.Runtime.Core.Attributes;
+using Depra.Toolkit.Singletons.Runtime.Unity;
+using Depra.Toolkit.Utils.Runtime.Singletons.Runtime.Unity;
 using UnityEngine;
 
-namespace Depra.Toolkit.SoundSystem.Runtime.Background
+namespace Depra.Sound.Runtime.Background
 {
     /// <summary>
     /// This class manages the background music of the game.
     /// </summary>
+    [Singleton]
     [RequireComponent(typeof(AudioSource))]
     public class BackgroundMusic : MonoSingleton<BackgroundMusic>
     {
-        protected override void OnRegistration()
+        private AudioSource _source;
+        
+        protected override void InitializeOverride()
         {
-            if (SoundPlayer.MusicEnabled == false)
-            {
-                GetComponent<AudioSource>().mute = true;
-            }
+            _source = GetComponent<AudioSource>();
+            SetMute(SoundPlayer.MusicEnabled == false);
+        }
+
+        public void SetMute(bool mute)
+        {
+            _source.mute = mute;
+        }
+
+        public void SetVolume(float volume)
+        {
+            _source.volume = volume;
         }
     }
 }
