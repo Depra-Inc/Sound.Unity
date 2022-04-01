@@ -1,6 +1,6 @@
-﻿using Depra.Toolkit.Singletons.Runtime.Core.Attributes;
-using Depra.Toolkit.Singletons.Runtime.Unity;
-using Depra.Toolkit.Utils.Runtime.Singletons.Runtime.Unity;
+﻿using Depra.Tools.Singletons.Runtime.Core.Attributes;
+using Depra.Tools.Singletons.Runtime.Unity;
+using Depra.Tools.Utils.Runtime.Singletons.Runtime.Unity;
 using UnityEngine;
 
 namespace Depra.Sound.Runtime.Background

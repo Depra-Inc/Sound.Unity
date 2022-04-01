@@ -8,7 +8,7 @@ using Depra.Extensions.Exceptions;
 using Depra.Sound.Runtime.Configuration.Implementations;
 using Depra.Sound.Runtime.Configuration.Interfaces;
 using Depra.Sound.Runtime.Effects;
-using Depra.Toolkit.Serialization.Interfaces.Runtime;
+using Depra.Tools.Serialization.Interfaces.Runtime;
 using UnityEngine;
 
 namespace Depra.Sound.Runtime.Systems
