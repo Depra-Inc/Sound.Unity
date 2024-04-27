@@ -5,7 +5,7 @@ using Depra.Sound.Source;
 using Depra.Source;
 using UnityEngine;
 
-namespace Depra.Sound.Runtime.Sources
+namespace Depra.Sound.Sources
 {
 	public sealed class DefaultAudioSourceFactory : IAudioSourceFactory
 	{
