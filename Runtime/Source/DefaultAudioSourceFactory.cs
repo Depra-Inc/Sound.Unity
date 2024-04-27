@@ -1,11 +1,9 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
-using Depra.Sound.Source;
-using Depra.Source;
 using UnityEngine;
 
-namespace Depra.Sound.Sources
+namespace Depra.Sound.Source
 {
 	public sealed class DefaultAudioSourceFactory : IAudioSourceFactory
 	{

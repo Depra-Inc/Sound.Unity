@@ -3,11 +3,9 @@
 
 using System.Collections;
 using Depra.Sound.Clip;
-using Depra.Sound.Source;
-using Depra.Source;
 using UnityEngine;
 
-namespace Depra.Sound.Runtime.Sources
+namespace Depra.Sound.Source
 {
 	[RequireComponent(typeof(UnityAudioSource))]
 	public sealed class OneTimeAudioSource : MonoBehaviour, IAudioSource

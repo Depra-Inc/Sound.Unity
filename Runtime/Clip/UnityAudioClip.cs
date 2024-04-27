@@ -3,10 +3,9 @@
 
 using System;
 using Depra.Inspector.SerializedReference;
-using Depra.Sound.Clip;
 using UnityEngine;
 
-namespace Depra.Sound.Clips
+namespace Depra.Sound.Clip
 {
 	[Serializable]
 	[SubtypeAlias(nameof(UnityAudioClip))]

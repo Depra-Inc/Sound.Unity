@@ -2,11 +2,9 @@
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
 using Depra.Sound.Clip;
-using Depra.Sound.Clips;
-using Depra.Sound.Source;
 using UnityEngine;
 
-namespace Depra.Source
+namespace Depra.Sound.Source
 {
 	[RequireComponent(typeof(AudioSource))]
 	public sealed class UnityAudioSource : MonoBehaviour, IAudioSource
