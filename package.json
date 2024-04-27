@@ -1,0 +1,21 @@
+{
+	"name": "com.depra.sound.unity",
+	"version": "0.0.1",
+	"displayName": "Depra.Sound",
+	"description": "",
+	"unity": "2021.3",
+	"license": "Apache-2.0",
+	"keywords": [
+		"sound",
+		"unity"
+	],
+	"author": {
+		"name": "Depra, Inc.",
+		"email": "n.melnikov@depra.org",
+		"url": "https://github.com/Depra-Inc"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Depra-Inc/Sound.Unity.git"
+	}
+}
