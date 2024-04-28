@@ -12,7 +12,6 @@ namespace Depra.Sound.Configuration
 	public struct SoundEntry
 	{
 		[field: SerializeField] public string Key { get; private set; }
-		[field: Range(0f, 1f), SerializeField] public float Volume { get; private set; }
 
 		[field: SubtypeDropdown, SerializeReference]
 		public IAudioContainer Container { get; private set; }
