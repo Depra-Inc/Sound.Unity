@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
+using System;
 using System.Collections;
 using Depra.Sound.Clip;
+using Depra.Sound.Parameter;
 using UnityEngine;
 
 namespace Depra.Sound.Source
@@ -15,17 +17,14 @@ namespace Depra.Sound.Source
 		private UnityAudioSource _source;
 		private Coroutine _selfDestroyCoroutine;
 
+		public event IAudioSource.PlayDelegate Started;
+		public event IAudioSource.StopDelegate Stopped;
+
 		private void Awake() => _source = GetComponent<UnityAudioSource>();
 
 		private void OnDestroy() => TryStopSelfDestroy();
 
 		public bool IsPlaying => _source.IsPlaying;
-
-		public float Volume
-		{
-			get => _source.Volume;
-			set => _source.Volume = value;
-		}
 
 		public void Play(IAudioClip clip)
 		{
@@ -35,6 +34,10 @@ namespace Depra.Sound.Source
 		}
 
 		public void Stop() => _source.Stop();
+
+		public IAudioClipParameter GetParameter(Type type) => _source.GetParameter(type);
+
+		public void SetParameter(IAudioClipParameter parameter) => _source.SetParameter(parameter);
 
 		private IEnumerator SelfDestroy(float duration)
 		{

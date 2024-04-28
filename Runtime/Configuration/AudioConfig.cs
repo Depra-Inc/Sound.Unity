@@ -12,10 +12,12 @@ using UnityEditor;
 
 namespace Depra.Sound.Configuration
 {
-	[CreateAssetMenu(menuName = MENU_PATH + nameof(SoundConfig), fileName = nameof(SoundConfig), order = DEFAULT_ORDER)]
-	public sealed class SoundConfig : ScriptableObject, IAudioClipLibrary
+	[CreateAssetMenu(menuName = MENU_PATH + FILE_NAME, fileName = FILE_NAME, order = DEFAULT_ORDER)]
+	public sealed class AudioConfig : ScriptableObject, IAudioBank
 	{
 		[SerializeField] private List<SoundEntry> _sounds;
+
+		private const string FILE_NAME = nameof(AudioConfig);
 
 		public bool Contains(SoundId id) => _sounds.Exists(x => x.Key == id.ToString());
 
