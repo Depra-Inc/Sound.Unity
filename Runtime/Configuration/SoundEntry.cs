@@ -3,6 +3,7 @@
 
 using System;
 using Depra.Inspector.SerializedReference;
+using Depra.Sound.Parameter;
 using UnityEngine;
 
 namespace Depra.Sound.Configuration
@@ -15,6 +16,9 @@ namespace Depra.Sound.Configuration
 
 		[field: SubtypeDropdown, SerializeReference]
 		public IAudioContainer Container { get; private set; }
+
+		[field: SubtypeDropdown, SerializeReference]
+		public IAudioClipParameter[] Parameters { get; private set; }
 
 		public bool IsValid() => string.IsNullOrEmpty(Key) == false && Container != null;
 	}

@@ -3,11 +3,11 @@
 
 namespace Depra.Sound
 {
-	public static class Module
+	internal static class Module
 	{
 		public const int DEFAULT_ORDER = 52;
 		public const string MENU_PATH = nameof(Depra) + SLASH + nameof(Sound) + SLASH;
 
-		public const string SLASH = "/";
+		private const string SLASH = "/";
 	}
 }
