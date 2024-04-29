@@ -2,18 +2,19 @@
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
 using System;
-using Depra.Inspector.SerializedReference;
+using Depra.SerializeReference.Extensions;
 using Depra.Sound.Clip;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Depra.Sound.Configuration
 {
 	[Serializable]
-	[SubtypeAlias(nameof(RandomAudioClip))]
+	[SerializeReferenceMenuPath(nameof(RandomAudioClip))]
 	public sealed class RandomAudioClip : IAudioContainer
 	{
-		[SubtypeDropdown] [SerializeReference] private IAudioClip[] _clips;
+		[SerializeReferenceDropdown]
+		[UnityEngine.SerializeReference]
+		private IAudioClip[] _clips;
 
 		public RandomAudioClip() { }
 

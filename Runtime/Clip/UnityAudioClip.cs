@@ -2,13 +2,13 @@
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
 using System;
-using Depra.Inspector.SerializedReference;
+using Depra.SerializeReference.Extensions;
 using UnityEngine;
 
 namespace Depra.Sound.Clip
 {
 	[Serializable]
-	[SubtypeAlias(nameof(UnityAudioClip))]
+	[SerializeReferenceMenuPath(nameof(UnityAudioClip))]
 	public sealed class UnityAudioClip : IAudioClip
 	{
 		[SerializeField] private AudioClip _value;

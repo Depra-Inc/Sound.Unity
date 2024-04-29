@@ -1,16 +1,17 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
-using Depra.Inspector.SerializedReference;
+using System;
+using Depra.SerializeReference.Extensions;
 using Depra.Sound.Clip;
-using UnityEngine;
 
 namespace Depra.Sound.Configuration
 {
-	[SubtypeAlias(nameof(SingleAudioClip))]
+	[Serializable]
+	[SerializeReferenceMenuPath(nameof(SingleAudioClip))]
 	public sealed class SingleAudioClip : IAudioContainer
 	{
-		[SubtypeDropdown] [SerializeReference] private IAudioClip _clip;
+		[SerializeReferenceDropdown] [UnityEngine.SerializeReference] private IAudioClip _clip;
 
 		public SingleAudioClip() { }
 

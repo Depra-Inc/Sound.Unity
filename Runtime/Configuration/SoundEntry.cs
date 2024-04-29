@@ -2,7 +2,7 @@
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
 using System;
-using Depra.Inspector.SerializedReference;
+using Depra.SerializeReference.Extensions;
 using Depra.Sound.Parameter;
 using UnityEngine;
 
@@ -13,10 +13,10 @@ namespace Depra.Sound.Configuration
 	{
 		[field: SerializeField] public string Key { get; private set; }
 
-		[field: SubtypeDropdown, SerializeReference]
+		[field: SerializeReferenceDropdown, UnityEngine.SerializeReference]
 		public IAudioContainer Container { get; private set; }
 
-		[field: SubtypeDropdown, SerializeReference]
+		[field: SerializeReferenceDropdown, UnityEngine.SerializeReference]
 		public IAudioClipParameter[] Parameters { get; private set; }
 
 		public bool IsValid() => string.IsNullOrEmpty(Key) == false && Container != null;
