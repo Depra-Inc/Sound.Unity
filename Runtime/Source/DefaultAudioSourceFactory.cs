@@ -6,6 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace Depra.Sound.Source
 {
+	[Serializable]
 	public sealed class DefaultAudioSourceFactory : IAudioSourceFactory
 	{
 		private readonly UnityAudioSource _original;
