@@ -8,6 +8,7 @@ using UnityEngine;
 namespace Depra.Sound.Clip
 {
 	[Serializable]
+	[SerializeReferenceIcon("d_AudioClip Icon")]
 	[SerializeReferenceMenuPath(nameof(UnityAudioClip))]
 	public sealed class UnityAudioClip : IAudioClip
 	{
