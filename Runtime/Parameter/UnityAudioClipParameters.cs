@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using Depra.Sound.Parameter;
 using UnityEngine;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound.Parameter
 {
 	internal sealed class UnityAudioClipParameters : IAudioClipParameters
 	{
