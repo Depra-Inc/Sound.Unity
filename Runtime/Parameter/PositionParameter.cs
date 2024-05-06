@@ -11,7 +11,7 @@ namespace Depra.Sound.Parameter
 	[SerializeReferenceIcon("d_Transform Icon")]
 	public struct PositionParameter : IAudioClipParameter
 	{
-		public Vector3 Value;
+		[field: SerializeField] public Vector3 Value { get; private set; }
 
 		public PositionParameter(Vector3 value) => Value = value;
 	}
