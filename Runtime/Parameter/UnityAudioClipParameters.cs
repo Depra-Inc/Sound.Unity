@@ -15,21 +15,23 @@ namespace Depra.Sound.Parameter
 
 		IEnumerable<Type> IAudioClipParameters.SupportedTypes() => new[]
 		{
-			typeof(EmptyParameter),
-			typeof(LoopParameter),
-			typeof(VolumeParameter),
-			typeof(PitchParameter),
 			typeof(PanParameter),
-			typeof(PositionParameter)
+			typeof(LoopParameter),
+			typeof(PitchParameter),
+			typeof(EmptyParameter),
+			typeof(VolumeParameter),
+			typeof(PositionParameter),
+			typeof(RuntimePositionParameter)
 		};
 
 		IAudioClipParameter IAudioClipParameters.Get(Type type) => type switch
 		{
 			_ when type == typeof(LoopParameter) => new LoopParameter(_source.loop),
-			_ when type == typeof(VolumeParameter) => new VolumeParameter(_source.volume),
-			_ when type == typeof(PitchParameter) => new PitchParameter(_source.pitch),
 			_ when type == typeof(PanParameter) => new PanParameter(_source.panStereo),
+			_ when type == typeof(PitchParameter) => new PitchParameter(_source.pitch),
+			_ when type == typeof(VolumeParameter) => new VolumeParameter(_source.volume),
 			_ when type == typeof(PositionParameter) => new PositionParameter(_source.transform.position),
+			_ when type == typeof(RuntimePositionParameter) => new PositionParameter(_source.transform.position),
 			_ => new NullParameter()
 		};
 
@@ -53,6 +55,9 @@ namespace Depra.Sound.Parameter
 					break;
 				case PositionParameter position:
 					_source.transform.position = position.Value;
+					break;
+				default:
+					Debug.LogError($"Failed to set parameter {parameter.GetType().Name}!");
 					break;
 			}
 		}

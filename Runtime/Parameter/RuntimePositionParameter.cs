@@ -8,5 +8,5 @@ namespace Depra.Sound.Parameter
 {
 	[Serializable]
 	[SerializeReferenceIcon("d_Transform Icon")]
-	public readonly struct RuntimePositionParameter : IAudioClipParameter { }
+	public sealed class RuntimePositionParameter : IAudioClipParameter { }
 }
