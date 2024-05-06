@@ -16,6 +16,7 @@ namespace Depra.Sound.Source
 
 		IEnumerable<Type> IAudioClipParameters.SupportedTypes() => new[]
 		{
+			typeof(EmptyParameter),
 			typeof(LoopParameter),
 			typeof(VolumeParameter),
 			typeof(PitchParameter),
@@ -37,6 +38,8 @@ namespace Depra.Sound.Source
 		{
 			switch (parameter)
 			{
+				case EmptyParameter:
+					break;
 				case LoopParameter loop:
 					_source.loop = loop.Value;
 					break;
