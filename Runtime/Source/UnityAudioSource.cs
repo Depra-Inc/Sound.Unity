@@ -10,7 +10,7 @@ namespace Depra.Sound.Source
 {
 	[RequireComponent(typeof(AudioSource))]
 	[AddComponentMenu(MENU_PATH + nameof(UnityAudioSource), DEFAULT_ORDER)]
-	public sealed class UnityAudioSource : MonoBehaviour, IAudioSource
+	public sealed class UnityAudioSource : SceneAudioSource, IAudioSource
 	{
 		private AudioSource _unitySource;
 		private UnityAudioClipParameters _parameters;

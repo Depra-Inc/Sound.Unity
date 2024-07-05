@@ -11,7 +11,7 @@ namespace Depra.Sound.Source
 	[Serializable]
 	public sealed class SceneAudioSourceRef : IAudioSource
 	{
-		[SerializeField] private GameObject _gameObject;
+		[SerializeField] private SceneAudioSource _gameObject;
 		private IAudioSource _audioSource;
 
 		private IAudioSource AudioSource => _audioSource ??= _gameObject.GetComponent<IAudioSource>();
