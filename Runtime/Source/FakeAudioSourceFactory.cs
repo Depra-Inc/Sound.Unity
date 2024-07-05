@@ -9,9 +9,9 @@ namespace Depra.Sound.Source
 	[Serializable]
 	public sealed class FakeAudioSourceFactory : IAudioSourceFactory
 	{
-		[SerializeField] private UnityAudioSource _instance;
+		[SerializeField] private SceneAudioSource _instance;
 
-		IAudioSource IAudioSourceFactory.Create() => _instance;
+		IAudioSource IAudioSourceFactory.Create() => (IAudioSource) _instance;
 
 		void IAudioSourceFactory.Destroy(IAudioSource source) { }
 	}
