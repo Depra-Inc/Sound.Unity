@@ -2,8 +2,7 @@
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
 using System;
-using Depra.Sound.Clip;
-using Depra.Sound.Parameter;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Depra.Sound.Source
@@ -14,26 +13,29 @@ namespace Depra.Sound.Source
 		[SerializeField] private SceneAudioSource _gameObject;
 		private IAudioSource _audioSource;
 
-		private IAudioSource AudioSource => _audioSource ??= _gameObject.GetComponent<IAudioSource>();
-
-		event IAudioSource.PlayDelegate IAudioSource.Started
+		event Action IAudioSource.Started
 		{
 			add => AudioSource.Started += value;
 			remove => AudioSource.Started -= value;
 		}
 
-		event IAudioSource.StopDelegate IAudioSource.Stopped
+		event Action<AudioStopReason> IAudioSource.Stopped
 		{
 			add => AudioSource.Stopped += value;
 			remove => AudioSource.Stopped -= value;
 		}
 
-		bool IAudioSource.IsPlaying => AudioSource.IsPlaying;
+		private IAudioSource AudioSource => _audioSource ??= _gameObject.GetComponent<IAudioSource>();
 
-		IAudioClipParameters IAudioSource.Parameters => AudioSource?.Parameters;
+		bool IAudioSource.IsPlaying => AudioSource.IsPlaying;
+		IAudioClip IAudioSource.Current => AudioSource.Current;
+		IEnumerable<Type> IAudioSource.SupportedTracks => AudioSource.SupportedTracks;
 
 		void IAudioSource.Stop() => AudioSource?.Stop();
+		void IAudioSource.Play(IAudioTrack track) => AudioSource?.Play(track);
 
-		void IAudioSource.Play(IAudioClip clip) => AudioSource?.Play(clip);
+		IAudioClipParameter IAudioSource.Read(Type parameterType) => AudioSource.Read(parameterType);
+		TParameter IAudioSource.Read<TParameter>() => AudioSource.Read<TParameter>();
+		IEnumerable<IAudioClipParameter> IAudioSource.EnumerateParameters() => AudioSource.EnumerateParameters();
 	}
 }

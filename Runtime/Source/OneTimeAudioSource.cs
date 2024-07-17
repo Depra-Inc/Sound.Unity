@@ -1,50 +1,53 @@
 // SPDX-License-Identifier: Apache-2.0
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
+using System;
 using System.Collections;
-using Depra.Sound.Clip;
-using Depra.Sound.Parameter;
+using System.Collections.Generic;
 using UnityEngine;
 using static Depra.Sound.Module;
 
 namespace Depra.Sound.Source
 {
-	[RequireComponent(typeof(UnityAudioSource))]
 	[AddComponentMenu(MENU_PATH + nameof(OneTimeAudioSource), DEFAULT_ORDER)]
 	public sealed class OneTimeAudioSource : MonoBehaviour, IAudioSource
 	{
+		[SerializeField] private SceneAudioSource _target;
 		[SerializeField] private float _threshold = 0.1f;
 
-		private UnityAudioSource _source;
+		private IAudioSource _source;
 		private Coroutine _selfDestroyCoroutine;
 
-		event IAudioSource.PlayDelegate IAudioSource.Started
+		event Action IAudioSource.Started
 		{
 			add => _source.Started += value;
 			remove => _source.Started -= value;
 		}
 
-		event IAudioSource.StopDelegate IAudioSource.Stopped
+		event Action<AudioStopReason> IAudioSource.Stopped
 		{
 			add => _source.Stopped += value;
 			remove => _source.Stopped -= value;
 		}
 
-		private void Awake() => _source = GetComponent<UnityAudioSource>();
+		private void Awake() => _source = _target.GetComponent<UnityAudioSource>();
 
 		private void OnDestroy() => TryStopSelfDestroy();
 
-		public bool IsPlaying => _source.IsPlaying;
-		IAudioClipParameters IAudioSource.Parameters => _source.Parameters;
-
-		public void Play(IAudioClip clip)
-		{
-			TryStopSelfDestroy();
-			_source.Play(clip);
-			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(clip.Duration + _threshold));
-		}
+		bool IAudioSource.IsPlaying => _source.IsPlaying;
+		IAudioClip IAudioSource.Current => _source.Current;
+		IEnumerable<Type> IAudioSource.SupportedTracks => _source.SupportedTracks;
 
 		public void Stop() => _source.Stop();
+
+		public void Play(IAudioTrack track)
+		{
+			TryStopSelfDestroy();
+			_source.Play(track);
+			var clip = _source.Current;
+			var threshold = clip.Duration + _threshold;
+			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
+		}
 
 		private IEnumerator SelfDestroy(float duration)
 		{
@@ -61,5 +64,9 @@ namespace Depra.Sound.Source
 				StopCoroutine(_selfDestroyCoroutine);
 			}
 		}
+
+		TParameter IAudioSource.Read<TParameter>() => _source.Read<TParameter>();
+		IAudioClipParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
+		IEnumerable<IAudioClipParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}
 }
