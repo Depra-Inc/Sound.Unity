@@ -49,6 +49,14 @@ namespace Depra.Sound.Source
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}
 
+		public void Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
+		{
+			TryStopSelfDestroy();
+			_source.Play(clip, parameters);
+			var threshold = clip.Duration + _threshold;
+			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
+		}
+
 		private IEnumerator SelfDestroy(float duration)
 		{
 			yield return new WaitForSeconds(duration);
@@ -65,7 +73,6 @@ namespace Depra.Sound.Source
 			}
 		}
 
-		void IAudioSource.Write(IAudioSourceParameter parameter) => _source.Write(parameter);
 		IAudioSourceParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
 		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}

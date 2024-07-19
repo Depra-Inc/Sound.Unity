@@ -98,9 +98,6 @@ namespace Depra.Sound.Source
 			_ => new NullParameter()
 		};
 
-		public TParameter Read<TParameter>() where TParameter : IAudioSourceParameter =>
-			(TParameter) Read(typeof(TParameter));
-
 		private void OnFinished() => Stopped?.Invoke(AudioStopReason.FINISHED);
 
 		private IEnumerable<Type> SupportedTypes() => new[]
@@ -113,6 +110,12 @@ namespace Depra.Sound.Source
 			typeof(PositionParameter),
 			typeof(RuntimePositionParameter)
 		};
+
+		void IAudioSource.Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
+		{
+			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_TRACK);
+			Play((UnityAudioClip) clip, parameters);
+		}
 
 		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SupportedTypes().Select(Read);
 	}

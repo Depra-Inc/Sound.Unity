@@ -33,8 +33,8 @@ namespace Depra.Sound.Source
 
 		void IAudioSource.Stop() => Source?.Stop();
 		void IAudioSource.Play(IAudioTrack track) => Source?.Play(track);
+		void IAudioSource.Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters) => Source?.Play(clip, parameters);
 
-		void IAudioSource.Write(IAudioSourceParameter parameter) => Source.Write(parameter);
 		IAudioSourceParameter IAudioSource.Read(Type parameterType) => Source.Read(parameterType);
 		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => Source.EnumerateParameters();
 	}
