@@ -14,29 +14,29 @@ namespace Depra.Sound.Source
 	{
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
-		private IAudioSource _audioSource;
+		private IAudioSource _source;
 
 		event Action IAudioSource.Started
 		{
-			add => _audioSource.Started += value;
-			remove => _audioSource.Started -= value;
+			add => _source.Started += value;
+			remove => _source.Started -= value;
 		}
 
 		event Action<AudioStopReason> IAudioSource.Stopped
 		{
-			add => _audioSource.Stopped += value;
-			remove => _audioSource.Stopped -= value;
+			add => _source.Stopped += value;
+			remove => _source.Stopped -= value;
 		}
 
-		bool IAudioSource.IsPlaying => _audioSource.IsPlaying;
-		IAudioClip IAudioSource.Current => _audioSource.Current;
-		IEnumerable<Type> IAudioSource.SupportedTracks => _audioSource.SupportedTracks;
+		bool IAudioSource.IsPlaying => _source.IsPlaying;
+		IAudioClip IAudioSource.Current => _source.Current;
+		IEnumerable<Type> IAudioSource.SupportedTracks => _source.SupportedTracks;
 
-		void IAudioSource.Stop() => _audioSource.Stop();
-		void IAudioSource.Play(IAudioTrack track) => _audioSource.Play(track);
+		void IAudioSource.Stop() => _source.Stop();
+		void IAudioSource.Play(IAudioTrack track) => _source.Play(track);
 
-		TParameter IAudioSource.Read<TParameter>() => _audioSource.Read<TParameter>();
-		IAudioClipParameter IAudioSource.Read(Type parameterType) => _audioSource.Read(parameterType);
-		IEnumerable<IAudioClipParameter> IAudioSource.EnumerateParameters() => _audioSource.EnumerateParameters();
+		void IAudioSource.Write(IAudioSourceParameter parameter) => _source.Write(parameter);
+		IAudioSourceParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
+		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}
 }

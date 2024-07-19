@@ -17,7 +17,7 @@ namespace Depra.Sound.Clip
 
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
-		private IAudioClipParameter[] _parameters;
+		private IAudioSourceParameter[] _parameters;
 
 		public UnityAudioTrack() { }
 		public UnityAudioTrack(AudioClip raw) => _value = raw;
@@ -31,5 +31,11 @@ namespace Depra.Sound.Clip
 		}
 
 		IAudioClip IAudioTrack.Play(IAudioSource source) => Play((UnityAudioSource) source);
+
+		void IAudioTrack.Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters)
+		{
+			clip = new UnityAudioClip(_value);
+			parameters = _parameters;
+		}
 	}
 }

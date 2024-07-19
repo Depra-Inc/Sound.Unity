@@ -11,31 +11,31 @@ namespace Depra.Sound.Source
 	public sealed class SceneAudioSourceRef : IAudioSource
 	{
 		[SerializeField] private SceneAudioSource _gameObject;
-		private IAudioSource _audioSource;
+		private IAudioSource _source;
 
 		event Action IAudioSource.Started
 		{
-			add => AudioSource.Started += value;
-			remove => AudioSource.Started -= value;
+			add => Source.Started += value;
+			remove => Source.Started -= value;
 		}
 
 		event Action<AudioStopReason> IAudioSource.Stopped
 		{
-			add => AudioSource.Stopped += value;
-			remove => AudioSource.Stopped -= value;
+			add => Source.Stopped += value;
+			remove => Source.Stopped -= value;
 		}
 
-		private IAudioSource AudioSource => _audioSource ??= _gameObject.GetComponent<IAudioSource>();
+		private IAudioSource Source => _source ??= _gameObject.GetComponent<IAudioSource>();
 
-		bool IAudioSource.IsPlaying => AudioSource.IsPlaying;
-		IAudioClip IAudioSource.Current => AudioSource.Current;
-		IEnumerable<Type> IAudioSource.SupportedTracks => AudioSource.SupportedTracks;
+		bool IAudioSource.IsPlaying => Source.IsPlaying;
+		IAudioClip IAudioSource.Current => Source.Current;
+		IEnumerable<Type> IAudioSource.SupportedTracks => Source.SupportedTracks;
 
-		void IAudioSource.Stop() => AudioSource?.Stop();
-		void IAudioSource.Play(IAudioTrack track) => AudioSource?.Play(track);
+		void IAudioSource.Stop() => Source?.Stop();
+		void IAudioSource.Play(IAudioTrack track) => Source?.Play(track);
 
-		IAudioClipParameter IAudioSource.Read(Type parameterType) => AudioSource.Read(parameterType);
-		TParameter IAudioSource.Read<TParameter>() => AudioSource.Read<TParameter>();
-		IEnumerable<IAudioClipParameter> IAudioSource.EnumerateParameters() => AudioSource.EnumerateParameters();
+		void IAudioSource.Write(IAudioSourceParameter parameter) => Source.Write(parameter);
+		IAudioSourceParameter IAudioSource.Read(Type parameterType) => Source.Read(parameterType);
+		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => Source.EnumerateParameters();
 	}
 }

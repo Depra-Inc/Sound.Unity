@@ -26,5 +26,12 @@ namespace Depra.Sound.Configuration
 
 			return source.Current;
 		}
+
+		public void Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters)
+		{
+			var randomIndex = Random.Range(0, _tracks.Length);
+			var randomTrack = _tracks[randomIndex];
+			randomTrack.Deconstruct(out clip, out parameters);
+		}
 	}
 }

@@ -26,5 +26,11 @@ namespace Depra.Sound.Configuration
 
 			return source.Current;
 		}
+
+		void IAudioTrack.Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters)
+		{
+			var track = _tracks[++_lastIndex % _tracks.Length];
+			track.Deconstruct(out clip, out parameters);
+		}
 	}
 }

@@ -46,12 +46,12 @@ namespace Depra.Sound.Source
 			Current = (UnityAudioClip) clip;
 		}
 
-		public void Play(UnityAudioClip clip, IEnumerable<IAudioClipParameter> parameters)
+		public void Play(UnityAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
 		{
 			Source.clip = clip;
 			foreach (var parameter in parameters)
 			{
-				Set(parameter);
+				Write(parameter);
 			}
 
 			Source.Play();
@@ -59,7 +59,7 @@ namespace Depra.Sound.Source
 			Invoke(nameof(OnFinished), clip.Duration);
 		}
 
-		public void Set(IAudioClipParameter parameter)
+		public void Write(IAudioSourceParameter parameter)
 		{
 			switch (parameter)
 			{
@@ -87,7 +87,7 @@ namespace Depra.Sound.Source
 			}
 		}
 
-		public IAudioClipParameter Read(Type type) => type switch
+		public IAudioSourceParameter Read(Type type) => type switch
 		{
 			_ when type == typeof(LoopParameter) => new LoopParameter(_source.loop),
 			_ when type == typeof(PanParameter) => new PanParameter(_source.panStereo),
@@ -98,7 +98,7 @@ namespace Depra.Sound.Source
 			_ => new NullParameter()
 		};
 
-		public TParameter Read<TParameter>() where TParameter : IAudioClipParameter =>
+		public TParameter Read<TParameter>() where TParameter : IAudioSourceParameter =>
 			(TParameter) Read(typeof(TParameter));
 
 		private void OnFinished() => Stopped?.Invoke(AudioStopReason.FINISHED);
@@ -114,6 +114,6 @@ namespace Depra.Sound.Source
 			typeof(RuntimePositionParameter)
 		};
 
-		IEnumerable<IAudioClipParameter> IAudioSource.EnumerateParameters() => SupportedTypes().Select(Read);
+		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SupportedTypes().Select(Read);
 	}
 }
