@@ -16,6 +16,7 @@ namespace Depra.Sound.Source
 	[AddComponentMenu(MENU_PATH + nameof(UnityAudioSource), DEFAULT_ORDER)]
 	public sealed class UnityAudioSource : SceneAudioSource, IAudioSource<UnityAudioClip>
 	{
+		private static readonly Type SUPPORTED_CLIP = typeof(UnityAudioClip);
 		private static readonly Type SUPPORTED_TRACK = typeof(UnityAudioTrack);
 		private static readonly Type[] SUPPORTED_TRACKS = { SUPPORTED_TRACK };
 
@@ -40,8 +41,9 @@ namespace Depra.Sound.Source
 
 		public void Play(IAudioTrack track)
 		{
+			Guard.AgainstUnsupportedType(track.GetType(), SUPPORTED_TRACK);
 			var clip = track.Play(this);
-			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_TRACK);
+			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
 
 			Current = (UnityAudioClip) clip;
 		}
@@ -100,7 +102,7 @@ namespace Depra.Sound.Source
 
 		private void OnFinished() => Stopped?.Invoke(AudioStopReason.FINISHED);
 
-		private IEnumerable<Type> SupportedTypes() => new[]
+		private IEnumerable<Type> SupportedParameterTypes() => new[]
 		{
 			typeof(PanParameter),
 			typeof(LoopParameter),
@@ -113,10 +115,10 @@ namespace Depra.Sound.Source
 
 		void IAudioSource.Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
 		{
-			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_TRACK);
+			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
 			Play((UnityAudioClip) clip, parameters);
 		}
 
-		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SupportedTypes().Select(Read);
+		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SupportedParameterTypes().Select(Read);
 	}
 }
