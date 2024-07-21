@@ -22,20 +22,11 @@ namespace Depra.Sound.Clip
 		public UnityAudioTrack() { }
 		public UnityAudioTrack(AudioClip raw) => _value = raw;
 
-		public IAudioClip Play(UnityAudioSource source)
-		{
-			var clip = new UnityAudioClip(_value);
-			source.Play(clip, _parameters);
+		public void Play(UnityAudioSource source) => source.Play(new UnityAudioClip(_value), _parameters);
 
-			return clip;
-		}
+		void IAudioTrack.Play(IAudioSource source) => Play((UnityAudioSource) source);
 
-		IAudioClip IAudioTrack.Play(IAudioSource source) => Play((UnityAudioSource) source);
-
-		void IAudioTrack.Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters)
-		{
-			clip = new UnityAudioClip(_value);
-			parameters = _parameters;
-		}
+		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments) => segments = new[]
+			{ new AudioTrackSegment(new UnityAudioClip(_value), _parameters) };
 	}
 }

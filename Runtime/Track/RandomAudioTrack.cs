@@ -18,20 +18,18 @@ namespace Depra.Sound.Configuration
 		public RandomAudioTrack() { }
 		public RandomAudioTrack(params IAudioTrack[] tracks) => _tracks = tracks;
 
-		IAudioClip IAudioTrack.Play(IAudioSource source)
+		void IAudioTrack.Play(IAudioSource source)
 		{
 			var randomIndex = Random.Range(0, _tracks.Length);
 			var randomTrack = _tracks[randomIndex];
-			source.Play(randomTrack);
-
-			return source.Current;
+			randomTrack.Play(source);
 		}
 
-		public void Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters)
+		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments)
 		{
 			var randomIndex = Random.Range(0, _tracks.Length);
 			var randomTrack = _tracks[randomIndex];
-			randomTrack.Deconstruct(out clip, out parameters);
+			randomTrack.Deconstruct(out segments);
 		}
 	}
 }

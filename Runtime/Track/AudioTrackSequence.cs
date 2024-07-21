@@ -19,18 +19,16 @@ namespace Depra.Sound.Configuration
 		public AudioTrackSequence() { }
 		public AudioTrackSequence(params IAudioTrack[] tracks) => _tracks = tracks;
 
-		public IAudioClip Play(IAudioSource source)
+		public void Play(IAudioSource source)
 		{
 			var track = _tracks[++_lastIndex % _tracks.Length];
-			source.Play(track);
-
-			return source.Current;
+			track.Play(source);
 		}
 
-		void IAudioTrack.Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters)
+		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments)
 		{
 			var track = _tracks[++_lastIndex % _tracks.Length];
-			track.Deconstruct(out clip, out parameters);
+			track.Deconstruct(out segments);
 		}
 	}
 }

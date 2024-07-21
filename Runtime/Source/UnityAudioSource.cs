@@ -17,8 +17,7 @@ namespace Depra.Sound.Source
 	public sealed class UnityAudioSource : SceneAudioSource, IAudioSource<UnityAudioClip>
 	{
 		private static readonly Type SUPPORTED_CLIP = typeof(UnityAudioClip);
-		private static readonly Type SUPPORTED_TRACK = typeof(UnityAudioTrack);
-		private static readonly Type[] SUPPORTED_TRACKS = { SUPPORTED_TRACK };
+		private static readonly Type[] SUPPORTED_CLIPS = { SUPPORTED_CLIP };
 
 		private AudioSource _source;
 
@@ -31,7 +30,7 @@ namespace Depra.Sound.Source
 		private AudioSource Source => _source ??= GetComponent<AudioSource>();
 
 		IAudioClip IAudioSource.Current => Current;
-		IEnumerable<Type> IAudioSource.SupportedTracks => SUPPORTED_TRACKS;
+		IEnumerable<Type> IAudioSource.SupportedClips => SUPPORTED_CLIPS;
 
 		public void Stop()
 		{
@@ -39,18 +38,9 @@ namespace Depra.Sound.Source
 			Stopped?.Invoke(AudioStopReason.STOPPED);
 		}
 
-		public void Play(IAudioTrack track)
-		{
-			Guard.AgainstUnsupportedType(track.GetType(), SUPPORTED_TRACK);
-			var clip = track.Play(this);
-			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
-
-			Current = (UnityAudioClip) clip;
-		}
-
 		public void Play(UnityAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
 		{
-			Source.clip = clip;
+			Source.clip = Current = clip;
 			foreach (var parameter in parameters)
 			{
 				Write(parameter);

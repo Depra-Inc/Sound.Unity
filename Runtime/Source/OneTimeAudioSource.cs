@@ -36,18 +36,9 @@ namespace Depra.Sound.Source
 
 		bool IAudioSource.IsPlaying => _source.IsPlaying;
 		IAudioClip IAudioSource.Current => _source.Current;
-		IEnumerable<Type> IAudioSource.SupportedTracks => _source.SupportedTracks;
+		IEnumerable<Type> IAudioSource.SupportedClips => _source.SupportedClips;
 
 		public void Stop() => _source.Stop();
-
-		public void Play(IAudioTrack track)
-		{
-			TryStopSelfDestroy();
-			_source.Play(track);
-			var clip = _source.Current;
-			var threshold = clip.Duration + _threshold;
-			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
-		}
 
 		public void Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
 		{

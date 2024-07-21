@@ -8,8 +8,8 @@ namespace Depra.Sound.Clip
 {
 	internal sealed class NullAudioTrack : IAudioTrack<UnityAudioSource>
 	{
-		IAudioClip IAudioTrack.Play(IAudioSource source) => throw new NotImplementedException();
-		IAudioClip IAudioTrack<UnityAudioSource>.Play(UnityAudioSource source) => throw new NotImplementedException();
-		void IAudioTrack.Deconstruct(out IAudioClip clip, out IAudioSourceParameter[] parameters) => throw new NotImplementedException();
+		void IAudioTrack.Play(IAudioSource source) => throw new NotImplementedException();
+		void IAudioTrack<UnityAudioSource>.Play(UnityAudioSource source) => throw new NotImplementedException();
+		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments) => throw new NotImplementedException();
 	}
 }
