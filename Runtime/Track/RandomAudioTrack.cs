@@ -25,11 +25,11 @@ namespace Depra.Sound.Configuration
 			randomTrack.Play(source);
 		}
 
-		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments)
+		AudioTrackSegment[] IAudioTrack.Deconstruct()
 		{
 			var randomIndex = Random.Range(0, _tracks.Length);
 			var randomTrack = _tracks[randomIndex];
-			randomTrack.Deconstruct(out segments);
+			return randomTrack.Deconstruct();
 		}
 	}
 }

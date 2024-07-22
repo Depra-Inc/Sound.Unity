@@ -10,6 +10,6 @@ namespace Depra.Sound.Clip
 	{
 		void IAudioTrack.Play(IAudioSource source) => throw new NotImplementedException();
 		void IAudioTrack<UnityAudioSource>.Play(UnityAudioSource source) => throw new NotImplementedException();
-		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments) => throw new NotImplementedException();
+		AudioTrackSegment[] IAudioTrack.Deconstruct() => throw new NotImplementedException();
 	}
 }

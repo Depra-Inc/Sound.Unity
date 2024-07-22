@@ -26,16 +26,15 @@ namespace Depra.Sound.Configuration
 			}
 		}
 
-		void IAudioTrack.Deconstruct(out AudioTrackSegment[] segments)
+		AudioTrackSegment[] IAudioTrack.Deconstruct()
 		{
 			var result = new List<AudioTrackSegment>();
 			foreach (var track in _tracks)
 			{
-				track.Deconstruct(out var childSegments);
-				result.AddRange(childSegments);
+				result.AddRange(track.Deconstruct());
 			}
 
-			segments = result.ToArray();
+			return result.ToArray();
 		}
 	}
 }
