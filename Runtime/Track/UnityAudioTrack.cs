@@ -24,7 +24,7 @@ namespace Depra.Sound.Clip
 
 		public void Play(UnityAudioSource source) => source.Play(new UnityAudioClip(_value), _parameters);
 
-		void IAudioTrack.Play(IAudioSource source) => Play((UnityAudioSource) source);
+		void IAudioTrack.Play(IAudioSource source) => source.Play(new UnityAudioClip(_value), _parameters);
 
 		AudioTrackSegment[] IAudioTrack.Deconstruct() => new[]
 			{ new AudioTrackSegment(new UnityAudioClip(_value), _parameters) };
