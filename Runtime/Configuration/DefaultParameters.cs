@@ -23,6 +23,21 @@ namespace Depra.Sound.Configuration
 	}
 
 	[Serializable]
+	public sealed class SingleParameter : IAudioSourceParameter
+	{
+		[field: SerializeField] public string Name { get; private set; }
+		[field: SerializeField] public float Value { get; private set; }
+
+		public SingleParameter() { }
+
+		public SingleParameter(string name, float value)
+		{
+			Name = name;
+			Value = value;
+		}
+	}
+
+	[Serializable]
 	[SerializeReferenceIcon("d_FilterByLabel")]
 	public sealed class LabelParameter : IAudioSourceParameter
 	{
@@ -53,17 +68,16 @@ namespace Depra.Sound.Configuration
 	public sealed class RuntimePositionParameter : IAudioSourceParameter { }
 
 	[Serializable]
-	public sealed class SingleParameter : IAudioSourceParameter
+	[SerializeReferenceIcon("d_Transform Icon")]
+	public sealed class FollowTransform : IAudioSourceParameter
 	{
-		[field: SerializeField] public string Name { get; private set; }
-		[field: SerializeField] public float Value { get; private set; }
+		[field: SerializeField] public Transform Value { get; private set; }
 
-		public SingleParameter() { }
-
-		public SingleParameter(string name, float value)
-		{
-			Name = name;
-			Value = value;
-		}
+		public FollowTransform() { }
+		public FollowTransform(Transform value) => Value = value;
 	}
+
+	[Serializable]
+	[SerializeReferenceIcon("d_Transform Icon")]
+	public sealed class RuntimeFollowTransform : IAudioSourceParameter { }
 }
