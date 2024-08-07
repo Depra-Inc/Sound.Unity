@@ -69,15 +69,15 @@ namespace Depra.Sound.Configuration
 
 	[Serializable]
 	[SerializeReferenceIcon("d_Transform Icon")]
-	public sealed class FollowTransform : IAudioSourceParameter
+	public sealed class TransformParameter : IAudioSourceParameter
 	{
 		[field: SerializeField] public Transform Value { get; private set; }
 
-		public FollowTransform() { }
-		public FollowTransform(Transform value) => Value = value;
+		public TransformParameter() { }
+		public TransformParameter(Transform value) => Value = value;
 	}
 
 	[Serializable]
 	[SerializeReferenceIcon("d_Transform Icon")]
-	public sealed class RuntimeFollowTransform : IAudioSourceParameter { }
+	public sealed class RuntimeTransformParameter : IAudioSourceParameter { }
 }

@@ -72,9 +72,12 @@ namespace Depra.Sound.Source
 				case PositionParameter position:
 					_source.transform.position = position.Value;
 					break;
+				case TransformParameter transformation:
+					_source.transform.position = transformation.Value.position;
+					_source.transform.rotation = transformation.Value.rotation;
+					break;
 				default:
-					Debug.LogErrorFormat(LOG_FORMAT,
-						$"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
+					Debug.LogErrorFormat(LOG_FORMAT, $"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
 					break;
 			}
 		}
@@ -85,8 +88,8 @@ namespace Depra.Sound.Source
 			_ when type == typeof(PanParameter) => new PanParameter(_source.panStereo),
 			_ when type == typeof(PitchParameter) => new PitchParameter(_source.pitch),
 			_ when type == typeof(VolumeParameter) => new VolumeParameter(_source.volume),
+			_ when type == typeof(TransformParameter) => new TransformParameter(_source.transform),
 			_ when type == typeof(PositionParameter) => new PositionParameter(_source.transform.position),
-			_ when type == typeof(RuntimePositionParameter) => new PositionParameter(_source.transform.position),
 			_ => new NullParameter()
 		};
 
@@ -100,7 +103,7 @@ namespace Depra.Sound.Source
 			typeof(EmptyParameter),
 			typeof(VolumeParameter),
 			typeof(PositionParameter),
-			typeof(RuntimePositionParameter)
+			typeof(TransformParameter)
 		};
 
 		void IAudioSource.Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
