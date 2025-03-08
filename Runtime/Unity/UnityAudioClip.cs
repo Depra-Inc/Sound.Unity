@@ -3,9 +3,9 @@
 
 using UnityEngine;
 
-namespace Depra.Sound.Clip
+namespace Depra.Sound.Unity
 {
-	public sealed class UnityAudioClip : IAudioClip
+	public readonly struct UnityAudioClip : IAudioClip
 	{
 		public static implicit operator AudioClip(UnityAudioClip clip) => clip._value;
 

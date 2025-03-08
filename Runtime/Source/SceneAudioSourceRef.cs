@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Depra.Sound.Source
 {
 	[Serializable]
-	public sealed class SceneAudioSourceRef : IAudioSource
+	public sealed class SceneAudioSourceRef : IAudioSource, IAudioSourceFactory
 	{
 		[SerializeField] private SceneAudioSource _gameObject;
 		private IAudioSource _source;
@@ -32,9 +32,12 @@ namespace Depra.Sound.Source
 		IEnumerable<Type> IAudioSource.SupportedClips => Source.SupportedClips;
 
 		void IAudioSource.Stop() => Source?.Stop();
-		void IAudioSource.Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters) => Source?.Play(clip, parameters);
+		void IAudioSource.Play(IAudioClip clip, IList<IAudioSourceParameter> parameters) => Source?.Play(clip, parameters);
 
 		IAudioSourceParameter IAudioSource.Read(Type parameterType) => Source.Read(parameterType);
 		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => Source.EnumerateParameters();
+
+		IAudioSource IAudioSourceFactory.Create() => Source;
+		void IAudioSourceFactory.Destroy(IAudioSource source) { }
 	}
 }
