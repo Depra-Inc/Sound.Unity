@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2025 Depra <n.melnikov@depra.org>
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using Depra.Sound.Clip;
+using System.Runtime.CompilerServices;
 using Depra.Sound.Configuration;
 using Depra.Sound.Exceptions;
 using UnityEngine;
 using static Depra.Sound.Module;
+using Debug = UnityEngine.Debug;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound.Unity
 {
 	[RequireComponent(typeof(AudioSource))]
 	[AddComponentMenu(MENU_PATH + nameof(UnityAudioSource), DEFAULT_ORDER)]
@@ -18,6 +20,16 @@ namespace Depra.Sound.Source
 	{
 		private static readonly Type SUPPORTED_CLIP = typeof(UnityAudioClip);
 		private static readonly Type[] SUPPORTED_CLIPS = { SUPPORTED_CLIP };
+		private static readonly Type[] SUPPORTED_PARAMETERS =
+		{
+			typeof(PanParameter),
+			typeof(LoopParameter),
+			typeof(PitchParameter),
+			typeof(EmptyParameter),
+			typeof(VolumeParameter),
+			typeof(PositionParameter),
+			typeof(TransformParameter)
+		};
 
 		private AudioSource _source;
 
@@ -27,10 +39,9 @@ namespace Depra.Sound.Source
 		public bool IsPlaying => Source.isPlaying;
 		public UnityAudioClip Current { get; private set; }
 
-		private AudioSource Source => _source ??= GetComponent<AudioSource>();
-
 		IAudioClip IAudioSource.Current => Current;
 		IEnumerable<Type> IAudioSource.SupportedClips => SUPPORTED_CLIPS;
+		private AudioSource Source => _source ??= GetComponent<AudioSource>();
 
 		public void Stop()
 		{
@@ -48,7 +59,9 @@ namespace Depra.Sound.Source
 
 			Source.Play();
 			Started?.Invoke();
+#if SOUND_EVENTS
 			Invoke(nameof(OnFinished), clip.Duration);
+#endif
 		}
 
 		public void Write(IAudioSourceParameter parameter)
@@ -77,7 +90,8 @@ namespace Depra.Sound.Source
 					_source.transform.rotation = transformation.Value.rotation;
 					break;
 				default:
-					Debug.LogErrorFormat(LOG_FORMAT, $"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
+					VerboseError(
+						$"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
 					break;
 			}
 		}
@@ -93,25 +107,20 @@ namespace Depra.Sound.Source
 			_ => new NullParameter()
 		};
 
-		private void OnFinished() => Stopped?.Invoke(AudioStopReason.FINISHED);
-
-		private IEnumerable<Type> SupportedParameterTypes() => new[]
-		{
-			typeof(PanParameter),
-			typeof(LoopParameter),
-			typeof(PitchParameter),
-			typeof(EmptyParameter),
-			typeof(VolumeParameter),
-			typeof(PositionParameter),
-			typeof(TransformParameter)
-		};
-
-		void IAudioSource.Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
+		void IAudioSource.Play(IAudioClip clip, IList<IAudioSourceParameter> parameters)
 		{
 			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
-			Play((UnityAudioClip) clip, parameters);
+			Play((UnityAudioClip)clip, parameters);
 		}
 
-		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SupportedParameterTypes().Select(Read);
+		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SUPPORTED_PARAMETERS.Select(Read);
+
+#if SOUND_EVENTS
+		private void OnFinished() => Stopped?.Invoke(AudioStopReason.FINISHED);
+#endif
+
+		[Conditional("SOUND_DEBUG")]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private void VerboseError(string message) => Debug.LogErrorFormat(LOG_FORMAT, message);
 	}
 }

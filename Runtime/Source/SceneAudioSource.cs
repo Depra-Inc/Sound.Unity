@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound
 {
 	public abstract class SceneAudioSource : MonoBehaviour { }
 }

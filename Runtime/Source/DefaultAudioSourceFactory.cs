@@ -1,20 +1,21 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2025 Depra <n.melnikov@depra.org>
 
-using System;
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Depra.Sound.Source
 {
-	[Serializable]
+	[System.Serializable]
 	public sealed class DefaultAudioSourceFactory : IAudioSourceFactory
 	{
-		private readonly UnityAudioSource _original;
+		[SerializeField] private SceneAudioSource _original;
 
-		public DefaultAudioSourceFactory(UnityAudioSource original) => _original = original;
+		public DefaultAudioSourceFactory() { }
+		public DefaultAudioSourceFactory(SceneAudioSource original) => _original = original;
 
-		IAudioSource IAudioSourceFactory.Create() => Object.Instantiate(_original);
+		IAudioSource IAudioSourceFactory.Create() => Object.Instantiate(_original).GetComponent<IAudioSource>();
 
-		void IAudioSourceFactory.Destroy(IAudioSource source) => Object.Destroy((Object) source);
+		void IAudioSourceFactory.Destroy(IAudioSource source) => Object.Destroy((Object)source);
 	}
 }

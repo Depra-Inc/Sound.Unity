@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2025 Depra <n.melnikov@depra.org>
 
 using System;
 using System.Collections;
@@ -30,7 +30,7 @@ namespace Depra.Sound.Source
 			remove => _source.Stopped -= value;
 		}
 
-		private void Awake() => _source = _target.GetComponent<UnityAudioSource>();
+		private void Awake() => _source = _target.GetComponent<IAudioSource>();
 
 		private void OnDestroy() => TryStopSelfDestroy();
 
@@ -40,7 +40,7 @@ namespace Depra.Sound.Source
 
 		public void Stop() => _source.Stop();
 
-		public void Play(IAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
+		public void Play(IAudioClip clip, IList<IAudioSourceParameter> parameters)
 		{
 			TryStopSelfDestroy();
 			_source.Play(clip, parameters);

@@ -1,7 +1,8 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2025 Depra <n.melnikov@depra.org>
 
 using System;
+using System.Collections.Generic;
 using Depra.SerializeReference.Extensions;
 using Random = UnityEngine.Random;
 
@@ -14,22 +15,16 @@ namespace Depra.Sound.Configuration
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
 		private IAudioTrack[] _tracks;
+		private IAudioTrack _randomTrack;
 
 		public RandomAudioTrack() { }
 		public RandomAudioTrack(params IAudioTrack[] tracks) => _tracks = tracks;
 
-		void IAudioTrack.Play(IAudioSource source)
+		void IAudioTrack.ExtractSegments(IList<AudioTrackSegment> segments)
 		{
 			var randomIndex = Random.Range(0, _tracks.Length);
-			var randomTrack = _tracks[randomIndex];
-			randomTrack.Play(source);
-		}
-
-		AudioTrackSegment[] IAudioTrack.Deconstruct()
-		{
-			var randomIndex = Random.Range(0, _tracks.Length);
-			var randomTrack = _tracks[randomIndex];
-			return randomTrack.Deconstruct();
+			_randomTrack = _tracks[randomIndex];
+			_randomTrack.ExtractSegments(segments);
 		}
 	}
 }

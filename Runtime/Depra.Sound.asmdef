@@ -1,5 +1,5 @@
 {
-    "name": "Depra.Sound.Unity",
+    "name": "Depra.Sound.Core",
     "rootNamespace": "Depra.Sound",
     "references": [
         "GUID:d4770dd4eaf4dc9469ce95e304152de6"

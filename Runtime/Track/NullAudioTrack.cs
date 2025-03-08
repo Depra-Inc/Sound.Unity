@@ -1,15 +1,12 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2025 Depra <n.melnikov@depra.org>
 
-using System;
-using Depra.Sound.Source;
+using System.Collections.Generic;
 
 namespace Depra.Sound.Clip
 {
-	internal sealed class NullAudioTrack : IAudioTrack<UnityAudioSource>
+	internal readonly struct NullAudioTrack : IAudioTrack
 	{
-		void IAudioTrack.Play(IAudioSource source) => throw new NotImplementedException();
-		void IAudioTrack<UnityAudioSource>.Play(UnityAudioSource source) => throw new NotImplementedException();
-		AudioTrackSegment[] IAudioTrack.Deconstruct() => throw new NotImplementedException();
+		void IAudioTrack.ExtractSegments(IList<AudioTrackSegment> segments) { }
 	}
 }

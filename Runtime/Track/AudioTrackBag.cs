@@ -1,5 +1,5 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 202-2025 Depra <n.melnikov@depra.org>
 
 using System;
 using System.Collections.Generic;
@@ -18,23 +18,12 @@ namespace Depra.Sound.Configuration
 		public AudioTrackBag() { }
 		public AudioTrackBag(params IAudioTrack[] tracks) => _tracks = tracks;
 
-		public void Play(IAudioSource source)
+		void IAudioTrack.ExtractSegments(IList<AudioTrackSegment> segments)
 		{
 			foreach (var track in _tracks)
 			{
-				track.Play(source);
+				track.ExtractSegments(segments);
 			}
-		}
-
-		AudioTrackSegment[] IAudioTrack.Deconstruct()
-		{
-			var result = new List<AudioTrackSegment>();
-			foreach (var track in _tracks)
-			{
-				result.AddRange(track.Deconstruct());
-			}
-
-			return result.ToArray();
 		}
 	}
 }
