@@ -64,35 +64,34 @@ namespace Depra.Sound.Unity
 #endif
 		}
 
-		public void Write(IAudioSourceParameter parameter)
+		public bool Write(IAudioSourceParameter parameter)
 		{
 			switch (parameter)
 			{
 				case EmptyParameter:
-					break;
+					return true;
 				case LoopParameter loop:
 					_source.loop = loop.Value;
-					break;
+					return true;
 				case VolumeParameter volume:
 					_source.volume = volume.Value;
-					break;
+					return true;
 				case PitchParameter pitch:
 					_source.pitch = pitch.Value;
-					break;
+					return true;
 				case PanParameter pan:
 					_source.panStereo = pan.Value;
-					break;
+					return true;
 				case PositionParameter position:
 					_source.transform.position = position.Value;
-					break;
+					return true;
 				case TransformParameter transformation:
 					_source.transform.position = transformation.Value.position;
 					_source.transform.rotation = transformation.Value.rotation;
-					break;
+					return true;
 				default:
-					VerboseError(
-						$"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
-					break;
+					VerboseError($"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
+					return false;
 			}
 		}
 

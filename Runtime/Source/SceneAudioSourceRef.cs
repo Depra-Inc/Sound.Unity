@@ -34,6 +34,7 @@ namespace Depra.Sound.Source
 		void IAudioSource.Stop() => Source?.Stop();
 		void IAudioSource.Play(IAudioClip clip, IList<IAudioSourceParameter> parameters) => Source?.Play(clip, parameters);
 
+		bool IAudioSource.Write(IAudioSourceParameter parameter) => Source.Write(parameter);
 		IAudioSourceParameter IAudioSource.Read(Type parameterType) => Source.Read(parameterType);
 		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => Source.EnumerateParameters();
 

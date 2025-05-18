@@ -64,6 +64,7 @@ namespace Depra.Sound.Source
 			}
 		}
 
+		bool IAudioSource.Write(IAudioSourceParameter parameter) => _source.Write(parameter);
 		IAudioSourceParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
 		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}
