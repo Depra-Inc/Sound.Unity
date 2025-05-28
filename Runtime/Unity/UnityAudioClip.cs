@@ -5,11 +5,12 @@ using UnityEngine;
 
 namespace Depra.Sound.Unity
 {
-	public readonly struct UnityAudioClip : IAudioClip
+	[System.Serializable]
+	public struct UnityAudioClip : IAudioClip
 	{
 		public static implicit operator AudioClip(UnityAudioClip clip) => clip._value;
 
-		private readonly AudioClip _value;
+		[SerializeField] private AudioClip _value;
 
 		public UnityAudioClip(AudioClip raw) => _value = raw;
 
