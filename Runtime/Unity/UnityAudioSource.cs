@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-// © 2024-2025 Depra <n.melnikov@depra.org>
+// © 2024-2026 Depra <n.melnikov@depra.org>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Depra.Sound.Configuration;
 using Depra.Sound.Exceptions;
@@ -19,17 +17,6 @@ namespace Depra.Sound.Unity
 	public sealed class UnityAudioSource : SceneAudioSource, IAudioSource<UnityAudioClip>
 	{
 		private static readonly Type SUPPORTED_CLIP = typeof(UnityAudioClip);
-		private static readonly Type[] SUPPORTED_CLIPS = { SUPPORTED_CLIP };
-		private static readonly Type[] SUPPORTED_PARAMETERS =
-		{
-			typeof(PanParameter),
-			typeof(LoopParameter),
-			typeof(PitchParameter),
-			typeof(EmptyParameter),
-			typeof(VolumeParameter),
-			typeof(PositionParameter),
-			typeof(TransformParameter)
-		};
 
 		private AudioSource _source;
 
@@ -38,9 +25,8 @@ namespace Depra.Sound.Unity
 
 		public bool IsPlaying => Source.isPlaying;
 		public UnityAudioClip Current { get; private set; }
-
 		IAudioClip IAudioSource.Current => Current;
-		IEnumerable<Type> IAudioSource.SupportedClips => SUPPORTED_CLIPS;
+
 		private AudioSource Source => _source ??= GetComponent<AudioSource>();
 
 		public void Stop()
@@ -49,14 +35,10 @@ namespace Depra.Sound.Unity
 			Stopped?.Invoke(AudioStopReason.STOPPED);
 		}
 
-		public void Play(UnityAudioClip clip, IEnumerable<IAudioSourceParameter> parameters)
+		public void Play(IAudioClip clip)
 		{
-			Source.clip = Current = clip;
-			foreach (var parameter in parameters)
-			{
-				Write(parameter);
-			}
-
+			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
+			Source.clip = Current = (UnityAudioClip)clip;
 			Source.Play();
 			Started?.Invoke();
 #if SOUND_EVENTS
@@ -64,55 +46,40 @@ namespace Depra.Sound.Unity
 #endif
 		}
 
-		public bool Write(IAudioSourceParameter parameter)
+		public void SetParameter(in AudioParameter parameter)
 		{
-			switch (parameter)
+			var parameterId = parameter.Id;
+			if (parameterId == AudioParameterId.Volume && parameter.Type == AudioParameterType.FLOAT)
 			{
-				case EmptyParameter:
-					return true;
-				case LoopParameter loop:
-					_source.loop = loop.Value;
-					return true;
-				case VolumeParameter volume:
-					_source.volume = volume.Value;
-					return true;
-				case PitchParameter pitch:
-					_source.pitch = pitch.Value;
-					return true;
-				case PanParameter pan:
-					_source.panStereo = pan.Value;
-					return true;
-				case PositionParameter position:
-					_source.transform.position = position.Value;
-					return true;
-				case TransformParameter transformation:
-					_source.transform.position = transformation.Value.position;
-					_source.transform.rotation = transformation.Value.rotation;
-					return true;
-				default:
-					VerboseError($"Parameter '{parameter.GetType().Name}' cannot be applied to '{_source.name}' ({nameof(AudioSource)})");
-					return false;
+				_source.volume = parameter.FloatValue;
+			}
+			else if (parameterId == AudioParameterId.Loop && parameter.Type == AudioParameterType.BOOL)
+			{
+				_source.loop = parameter.IntegerValue != 0;
+			}
+			else if (parameterId == AudioParameterId.Pan && parameter.Type == AudioParameterType.FLOAT)
+			{
+				_source.panStereo = parameter.FloatValue;
+			}
+			else if (parameterId == AudioParameterId.Pitch && parameter.Type == AudioParameterType.FLOAT)
+			{
+				_source.pitch = parameter.FloatValue;
+			}
+			else if (parameterId == Audio3DParameterId.Position && parameter.Type == AudioParameterType.VECTOR3)
+			{
+				_source.transform.position = new Vector3(parameter.Float0, parameter.Float1, parameter.Float2);
+			}
+			else if (parameterId == Audio3DParameterId.Transform && parameter is
+				         { Type: AudioParameterType.REFERENCE, ReferenceValue: Transform target })
+			{
+				_source.transform.position = target.position;
+				_source.transform.rotation = target.rotation;
+			}
+			else
+			{
+				VerboseError($"Parameter '{parameterId}' has unexpected type '{parameter.Type}' for '{_source.name}'");
 			}
 		}
-
-		public IAudioSourceParameter Read(Type type) => type switch
-		{
-			_ when type == typeof(LoopParameter) => new LoopParameter(_source.loop),
-			_ when type == typeof(PanParameter) => new PanParameter(_source.panStereo),
-			_ when type == typeof(PitchParameter) => new PitchParameter(_source.pitch),
-			_ when type == typeof(VolumeParameter) => new VolumeParameter(_source.volume),
-			_ when type == typeof(TransformParameter) => new TransformParameter(_source.transform),
-			_ when type == typeof(PositionParameter) => new PositionParameter(_source.transform.position),
-			_ => new NullParameter()
-		};
-
-		void IAudioSource.Play(IAudioClip clip, IList<IAudioSourceParameter> parameters)
-		{
-			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
-			Play((UnityAudioClip)clip, parameters);
-		}
-
-		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => SUPPORTED_PARAMETERS.Select(Read);
 
 #if SOUND_EVENTS
 		private void OnFinished() => Stopped?.Invoke(AudioStopReason.FINISHED);

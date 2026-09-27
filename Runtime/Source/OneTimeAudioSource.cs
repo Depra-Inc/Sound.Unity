@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Depra.Sound.Module;
 
@@ -36,17 +35,18 @@ namespace Depra.Sound.Source
 
 		bool IAudioSource.IsPlaying => _source.IsPlaying;
 		IAudioClip IAudioSource.Current => _source.Current;
-		IEnumerable<Type> IAudioSource.SupportedClips => _source.SupportedClips;
 
 		public void Stop() => _source.Stop();
 
-		public void Play(IAudioClip clip, IList<IAudioSourceParameter> parameters)
+		public void Play(IAudioClip clip)
 		{
 			TryStopSelfDestroy();
-			_source.Play(clip, parameters);
+			_source.Play(clip);
 			var threshold = clip.Duration + _threshold;
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}
+
+		public void SetParameter(in AudioParameter parameter) => _source.SetParameter(parameter);
 
 		private IEnumerator SelfDestroy(float duration)
 		{
@@ -63,9 +63,5 @@ namespace Depra.Sound.Source
 				StopCoroutine(_selfDestroyCoroutine);
 			}
 		}
-
-		bool IAudioSource.Write(IAudioSourceParameter parameter) => _source.Write(parameter);
-		IAudioSourceParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
-		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}
 }

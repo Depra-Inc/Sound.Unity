@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Depra.SerializeReference.Extensions;
-using Depra.Sound.Clip;
+using UnityEditor;
 using UnityEngine;
 using static Depra.Sound.Module;
 
@@ -16,57 +14,40 @@ namespace Depra.Sound.Configuration
 	[CreateAssetMenu(menuName = MENU_PATH + FILE_NAME, fileName = FILE_NAME, order = DEFAULT_ORDER)]
 	public sealed class PersistentAudioBank : ScriptableObject, IAudioBank
 	{
-		[SerializeField] private List<SoundKvp> _sounds;
+		[SerializeField] private List<Entry> _events;
 
-		private const string FILE_NAME = nameof(PersistentAudioBank);
+		private const string FILE_NAME = "Audio Bank";
 
-		public bool Contains(TrackId id)
+		public bool Contains(AudioEventId id) => _events.Exists(entry => entry.Id == id);
+
+		public bool TryGet(AudioEventId eventId, out IAudioEventDescription description)
 		{
-			for (var index = 0; index < _sounds.Count; index++)
+			var index = eventId.Value;
+			if ((uint)index >= (uint)_events.Count)
 			{
-				if (_sounds[index].Key == id.ToString())
-				{
-					return true;
-				}
+				description = null;
+				return false;
 			}
 
-			return false;
+			description = _events[index].Description;
+			return description != null;
 		}
-
-		public IAudioTrack Get(TrackId id)
-		{
-			for (var index = 0; index < _sounds.Count; index++)
-			{
-				var sound = _sounds[index];
-				if (sound.Key == id.ToString())
-				{
-					return sound.Track;
-				}
-			}
-
-			return new NullAudioTrack();
-		}
-
-		public IEnumerable<IAudioTrack> Enumerate() => from sound in _sounds where sound.IsValid() select sound.Track;
 
 #if UNITY_EDITOR
 		[ContextMenu(nameof(Sort))]
 		internal void Sort()
 		{
-			_sounds.Sort((a, b) => string.Compare(a.Key, b.Key, StringComparison.Ordinal));
-			UnityEditor.EditorUtility.SetDirty(this);
+			_events.Sort((a, b) => a.Id.Value.CompareTo(b.Id.Value));
+			EditorUtility.SetDirty(this);
 		}
 #endif
 
 		[Serializable]
-		private struct SoundKvp
+		public struct Entry
 		{
-			[field: SerializeField] public string Key { get; private set; }
-
-			[field: SerializeReferenceDropdown, UnityEngine.SerializeReference]
-			public IAudioTrack Track { get; private set; }
-
-			public bool IsValid() => string.IsNullOrEmpty(Key) == false && Track != null;
+			public AudioEventId Id;
+			[UnityEngine.SerializeReference]
+			public IAudioEventDescription Description;
 		}
 	}
 }

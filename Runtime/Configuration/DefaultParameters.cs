@@ -8,19 +8,6 @@ using UnityEngine;
 namespace Depra.Sound.Configuration
 {
 	[Serializable]
-	public struct IntegerParameter : IAudioSourceParameter
-	{
-		[field: SerializeField] public string Name { get; private set; }
-		[field: SerializeField] public int Value { get; private set; }
-
-		public IntegerParameter(string name, int value)
-		{
-			Name = name;
-			Value = value;
-		}
-	}
-
-	[Serializable]
 	public struct SingleParameter : IAudioSourceParameter
 	{
 		[field: SerializeField] public string Name { get; private set; }

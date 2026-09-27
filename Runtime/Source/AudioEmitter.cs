@@ -19,9 +19,9 @@ namespace Depra.Sound
 		[UnityEngine.SerializeReference]
 		private IAudioClip _clip;
 
-		[SerializeReferenceDropdown]
-		[UnityEngine.SerializeReference]
-		private IAudioSourceParameter[] _parameters;
+		//[SerializeReferenceDropdown]
+		//[UnityEngine.SerializeReference]
+		//private IAudioSourceParameter[] _parameters;
 
 		[SerializeField] private EmitterEvent _playEvent = EmitterEvent.OBJECT_START;
 		[SerializeField] private EmitterEvent _stopEvent = EmitterEvent.NONE;
@@ -36,7 +36,7 @@ namespace Depra.Sound
 			Guard.AgainstNull(_clip, nameof(_clip));
 			_source = GetComponent<IAudioSource>();
 			Guard.AgainstNull(_source, nameof(_source));
-			_parameters ??= Array.Empty<IAudioSourceParameter>();
+			//_parameters ??= Array.Empty<IAudioSourceParameter>();
 		}
 
 		private void Start() => HandleEvent(EmitterEvent.OBJECT_START);
@@ -62,7 +62,7 @@ namespace Depra.Sound
 		{
 			if (!_triggerOnce || !_hasTriggered)
 			{
-				_source.Play(_clip, _parameters);
+				//_source.Play(_clip, _parameters);
 			}
 		}
 
