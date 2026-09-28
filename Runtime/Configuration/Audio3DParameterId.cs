@@ -15,6 +15,10 @@ namespace Depra.Sound.Configuration
 	public readonly struct UnityAudioParameters
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AudioParameter Position(Vector3 position) =>
+			AudioParameter.Vector3(Audio3DParameterId.Position, position.x, position.y, position.z);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParameter Transform(Transform transform) =>
 			AudioParameter.CustomReference(Audio3DParameterId.Transform, Audio3DParameterId.Transform, transform);
 
