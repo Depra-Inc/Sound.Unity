@@ -1,41 +1,63 @@
 using System;
+using System.Collections.Generic;
 using Depra.SerializeReference.Extensions;
-using UnityEngine;
+using Depra.Sound.Runtime;
 
 namespace Depra.Sound.Configuration
 {
-	public sealed class AudioEventContainer : IAudioEventDescription
+	[Serializable]
+	public sealed class AudioEventDescription : IAudioEventVariant
 	{
-		[SerializeField] private Mode _mode;
+		[SerializeReferenceDropdown]
+		[UnityEngine.SerializeReference]
+		private IAudioClip _clip;
 
-		public IAudioClip Clip { get; }
+		[SerializeReferenceDropdown]
+		[UnityEngine.SerializeReference]
+		private List<IAudioEventParameter> _parameters = new();
 
-		public void ApplyStaticParameters(IAudioSource source)
+		[SerializeReferenceDropdown]
+		[UnityEngine.SerializeReference]
+		private List<IAudioEventRequirement> _requirements = new();
+
+		public IAudioEventDescription Compile()
 		{
-			throw new NotImplementedException();
-		}
+			var parameters = new AudioParameter[_parameters?.Count ?? 0];
+			for (var index = 0; index < parameters.Length; index++)
+			{
+				parameters[index] = _parameters[index].Compile();
+			}
 
-		public enum Mode
-		{
-			BAG,
-			RANDOM
+			return new RuntimeAudioEvent(_clip, new AudioEventRequirements(_requirements), parameters);
 		}
 	}
 
-	[Serializable]
-	public sealed class AudioEventDescription : IAudioEventDescription
+	public sealed class AudioEventRequirements : IAudioEventContract
 	{
-		[field: SerializeReferenceDropdown, UnityEngine.SerializeReference]
-		public IAudioClip Clip { get; private set; }
+		private readonly List<IAudioEventRequirement> _requirements;
+		public AudioEventRequirements(List<IAudioEventRequirement> requirements) => _requirements = requirements;
 
-		[SerializeField] private AudioParameter[] _parameters;
-
-		void IAudioEventDescription.ApplyStaticParameters(IAudioSource source)
+		bool IAudioEventContract.Validate(ReadOnlySpan<AudioParameter> parameters, out string error)
 		{
-			foreach (var parameter in _parameters)
+			foreach (var requirement in _requirements)
 			{
-				source.SetParameter(parameter);
+				if (!requirement.Validate(parameters, out error))
+				{
+					return false;
+				}
 			}
+
+			error = null;
+			return true;
 		}
+	}
+
+	/// <summary>
+	/// Authoring source for a single playable audio event or a set of alternative variants.
+	/// Compiles into a <see cref="RuntimeAudioEvent"/> once, at application start.
+	/// </summary>
+	public interface IAudioEventVariant
+	{
+		IAudioEventDescription Compile();
 	}
 }

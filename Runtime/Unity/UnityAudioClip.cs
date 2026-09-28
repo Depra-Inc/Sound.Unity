@@ -1,11 +1,14 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
+using Depra.SerializeReference.Extensions;
 using UnityEngine;
 
 namespace Depra.Sound.Unity
 {
 	[System.Serializable]
+	[SerializeReferenceIcon("d_AudioClip Icon")]
+	[SerializeReferenceMenuPath("Unity Audio Clip")]
 	public struct UnityAudioClip : IAudioClip
 	{
 		public static implicit operator AudioClip(UnityAudioClip clip) => clip._value;

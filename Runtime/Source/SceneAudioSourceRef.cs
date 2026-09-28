@@ -28,10 +28,12 @@ namespace Depra.Sound.Source
 		IAudioClip IAudioSource.Current => Source.Current;
 		private IAudioSource Source => _source ??= _gameObject.GetComponent<IAudioSource>();
 
-		void IAudioSource.Stop() => Source?.Stop();
-
 		public void Play(IAudioClip clip) => Source?.Play(clip);
-		void IAudioSource.SetParameter(in AudioParameter parameter) => Source?.SetParameter(parameter);
+
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParameter> staticParams,
+			ReadOnlySpan<AudioParameter> dynamicParams) => Source?.Play(clip, staticParams, dynamicParams);
+
+		void IAudioSource.Stop() => Source?.Stop();
 
 		IAudioSource IAudioSourceFactory.Create() => Source;
 		void IAudioSourceFactory.Destroy(IAudioSource source) { }

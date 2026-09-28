@@ -7,9 +7,9 @@ namespace Depra.Sound.Configuration
 	{
 		public static readonly AudioParameterId Position = new(101);
 		public static readonly AudioParameterId Transform = new(102);
-		public static readonly AudioParameterId NamedInt = new(103);
-		public static readonly AudioParameterId NamedFloat = new(104);
-		public static readonly AudioParameterId NamedString = new(105);
+		public static readonly AudioParameterId LabeledInt = new(103);
+		public static readonly AudioParameterId LabeledFloat = new(104);
+		public static readonly AudioParameterId LabeledString = new(105);
 	}
 
 	public readonly struct UnityAudioParameters
@@ -17,15 +17,15 @@ namespace Depra.Sound.Configuration
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParameter Transform(Transform transform) =>
 			AudioParameter.CustomReference(Audio3DParameterId.Transform, Audio3DParameterId.Transform, transform);
-		
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AudioParameter NamedInteger(string name, int value) =>
-			AudioParameter.CustomReference(Audio3DParameterId.NamedInt, Audio3DParameterId.NamedInt, name,
+		public static AudioParameter LabeledInt(string name, int value) =>
+			AudioParameter.CustomReference(Audio3DParameterId.LabeledInt, Audio3DParameterId.LabeledInt, name,
 				integerValue: value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AudioParameter NamedFloat(string name, float value) =>
-			AudioParameter.CustomReference(Audio3DParameterId.NamedFloat, Audio3DParameterId.NamedFloat, name,
+		public static AudioParameter LabeledFloat(string name, float value) =>
+			AudioParameter.CustomReference(Audio3DParameterId.LabeledFloat, Audio3DParameterId.LabeledFloat, name,
 				float0: value);
 
 		// [MethodImpl(MethodImplOptions.AggressiveInlining)]

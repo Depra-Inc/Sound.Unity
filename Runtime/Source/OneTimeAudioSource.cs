@@ -36,8 +36,6 @@ namespace Depra.Sound.Source
 		bool IAudioSource.IsPlaying => _source.IsPlaying;
 		IAudioClip IAudioSource.Current => _source.Current;
 
-		public void Stop() => _source.Stop();
-
 		public void Play(IAudioClip clip)
 		{
 			TryStopSelfDestroy();
@@ -46,7 +44,15 @@ namespace Depra.Sound.Source
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}
 
-		public void SetParameter(in AudioParameter parameter) => _source.SetParameter(parameter);
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParameter> staticParams, ReadOnlySpan<AudioParameter> dynamicParams)
+		{
+			TryStopSelfDestroy();
+			_source.Play(clip, staticParams, dynamicParams);
+			var threshold = clip.Duration + _threshold;
+			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
+		}
+
+		public void Stop() => _source.Stop();
 
 		private IEnumerator SelfDestroy(float duration)
 		{

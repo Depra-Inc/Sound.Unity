@@ -14,7 +14,7 @@ namespace Depra.Sound.Unity
 {
 	[RequireComponent(typeof(AudioSource))]
 	[AddComponentMenu(MENU_PATH + nameof(UnityAudioSource), DEFAULT_ORDER)]
-	public sealed class UnityAudioSource : SceneAudioSource, IAudioSource<UnityAudioClip>
+	public sealed class UnityAudioSource : SceneAudioSource, IAudioSource
 	{
 		private static readonly Type SUPPORTED_CLIP = typeof(UnityAudioClip);
 
@@ -39,6 +39,29 @@ namespace Depra.Sound.Unity
 		{
 			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
 			Source.clip = Current = (UnityAudioClip)clip;
+
+			Source.Play();
+			Started?.Invoke();
+#if SOUND_EVENTS
+			Invoke(nameof(OnFinished), clip.Duration);
+#endif
+		}
+
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParameter> staticParams, ReadOnlySpan<AudioParameter> dynamicParams)
+		{
+			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
+			Source.clip = Current = (UnityAudioClip)clip;
+
+			foreach (var parameter in staticParams)
+			{
+				SetParameter(parameter);
+			}
+
+			foreach (var parameter in dynamicParams)
+			{
+				SetParameter(parameter);
+			}
+			
 			Source.Play();
 			Started?.Invoke();
 #if SOUND_EVENTS
