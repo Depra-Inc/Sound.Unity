@@ -19,14 +19,13 @@ namespace Depra.Sound.Unity
 		private static readonly Type SUPPORTED_CLIP = typeof(UnityAudioClip);
 
 		private AudioSource _source;
+		private UnityAudioClip _current;
 
 		public event Action Started;
 		public event Action<AudioStopReason> Stopped;
 
 		public bool IsPlaying => Source.isPlaying;
-		public UnityAudioClip Current { get; private set; }
-		IAudioClip IAudioSource.Current => Current;
-
+		IAudioClip IAudioSource.Current => _current;
 		private AudioSource Source => _source ??= GetComponent<AudioSource>();
 
 		public void Stop()
@@ -37,8 +36,8 @@ namespace Depra.Sound.Unity
 
 		public void Play(IAudioClip clip)
 		{
-			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
-			Source.clip = Current = (UnityAudioClip)clip;
+			Guard.AgainstUnsupportedType(clip, SUPPORTED_CLIP);
+			Source.clip = _current = (UnityAudioClip)clip;
 
 			Source.Play();
 			Started?.Invoke();
@@ -47,10 +46,10 @@ namespace Depra.Sound.Unity
 #endif
 		}
 
-		public void Play(IAudioClip clip, ReadOnlySpan<AudioParameter> staticParams, ReadOnlySpan<AudioParameter> dynamicParams)
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> staticParams, ReadOnlySpan<AudioParam> dynamicParams)
 		{
-			Guard.AgainstUnsupportedType(clip.GetType(), SUPPORTED_CLIP);
-			Source.clip = Current = (UnityAudioClip)clip;
+			Guard.AgainstUnsupportedType(clip, SUPPORTED_CLIP);
+			Source.clip = _current = (UnityAudioClip)clip;
 
 			foreach (var parameter in staticParams)
 			{
@@ -61,7 +60,7 @@ namespace Depra.Sound.Unity
 			{
 				SetParameter(parameter);
 			}
-			
+
 			Source.Play();
 			Started?.Invoke();
 #if SOUND_EVENTS
@@ -69,31 +68,31 @@ namespace Depra.Sound.Unity
 #endif
 		}
 
-		public void SetParameter(in AudioParameter parameter)
+		private void SetParameter(in AudioParam parameter)
 		{
 			var parameterId = parameter.Id;
-			if (parameterId == AudioParameterId.Volume && parameter.Type == AudioParameterType.FLOAT)
+			if (parameterId == AudioParamId.Volume && parameter.Type == AudioParamType.FLOAT)
 			{
 				_source.volume = parameter.FloatValue;
 			}
-			else if (parameterId == AudioParameterId.Loop && parameter.Type == AudioParameterType.BOOL)
+			else if (parameterId == AudioParamId.Loop && parameter.Type == AudioParamType.BOOL)
 			{
 				_source.loop = parameter.IntegerValue != 0;
 			}
-			else if (parameterId == AudioParameterId.Pan && parameter.Type == AudioParameterType.FLOAT)
+			else if (parameterId == AudioParamId.Pan && parameter.Type == AudioParamType.FLOAT)
 			{
 				_source.panStereo = parameter.FloatValue;
 			}
-			else if (parameterId == AudioParameterId.Pitch && parameter.Type == AudioParameterType.FLOAT)
+			else if (parameterId == AudioParamId.Pitch && parameter.Type == AudioParamType.FLOAT)
 			{
 				_source.pitch = parameter.FloatValue;
 			}
-			else if (parameterId == Audio3DParameterId.Position && parameter.Type == AudioParameterType.VECTOR3)
+			else if (parameterId == UnityAudioParamId.Position && parameter.Type == AudioParamType.VECTOR3)
 			{
 				_source.transform.position = new Vector3(parameter.Float0, parameter.Float1, parameter.Float2);
 			}
-			else if (parameterId == Audio3DParameterId.Transform && parameter is
-				         { Type: AudioParameterType.REFERENCE, ReferenceValue: Transform target })
+			else if (parameterId == UnityAudioParamId.Transform && parameter is
+				         { Type: AudioParamType.REFERENCE, ReferenceValue: Transform target })
 			{
 				_source.transform.position = target.position;
 				_source.transform.rotation = target.rotation;

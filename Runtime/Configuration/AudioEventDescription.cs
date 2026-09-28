@@ -22,33 +22,13 @@ namespace Depra.Sound.Configuration
 
 		public IAudioEventDescription Compile()
 		{
-			var parameters = new AudioParameter[_parameters?.Count ?? 0];
+			var parameters = new AudioParam[_parameters?.Count ?? 0];
 			for (var index = 0; index < parameters.Length; index++)
 			{
 				parameters[index] = _parameters[index].Compile();
 			}
 
 			return new RuntimeAudioEvent(_clip, new AudioEventRequirements(_requirements), parameters);
-		}
-	}
-
-	public sealed class AudioEventRequirements : IAudioEventContract
-	{
-		private readonly List<IAudioEventRequirement> _requirements;
-		public AudioEventRequirements(List<IAudioEventRequirement> requirements) => _requirements = requirements;
-
-		bool IAudioEventContract.Validate(ReadOnlySpan<AudioParameter> parameters, out string error)
-		{
-			foreach (var requirement in _requirements)
-			{
-				if (!requirement.Validate(parameters, out error))
-				{
-					return false;
-				}
-			}
-
-			error = null;
-			return true;
 		}
 	}
 

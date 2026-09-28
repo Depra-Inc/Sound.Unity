@@ -59,13 +59,13 @@ namespace Depra.Sound.Runtime
 	/// </summary>
 	public sealed class RuntimeAudioEvent : IAudioEventDescription
 	{
-		private readonly AudioParameter[] _parameters;
+		private readonly AudioParam[] _parameters;
 
-		public RuntimeAudioEvent(IAudioClip clip, IAudioEventContract contract, AudioParameter[] parameters)
+		public RuntimeAudioEvent(IAudioClip clip, IAudioEventContract contract, AudioParam[] parameters)
 		{
 			Clip = clip;
 			Contract = contract;
-			_parameters = parameters ?? Array.Empty<AudioParameter>();
+			_parameters = parameters ?? Array.Empty<AudioParam>();
 		}
 
 		public IAudioClip Clip
@@ -80,7 +80,7 @@ namespace Depra.Sound.Runtime
 			get;
 		}
 
-		public ReadOnlySpan<AudioParameter> StaticParameters
+		public ReadOnlySpan<AudioParam> StaticParameters
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _parameters;
@@ -121,10 +121,10 @@ namespace Depra.Sound.Runtime
 
 		public IAudioEventContract Contract { get; }
 
-		public ReadOnlySpan<AudioParameter> StaticParameters =>
+		public ReadOnlySpan<AudioParam> StaticParameters =>
 			(uint)_selectedVariantIndex < (uint)_variants.Length
 				? _variants[_selectedVariantIndex].StaticParameters
-				: ReadOnlySpan<AudioParameter>.Empty;
+				: ReadOnlySpan<AudioParam>.Empty;
 
 		private int SelectVariantIndex()
 		{

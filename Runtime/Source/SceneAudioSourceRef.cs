@@ -30,8 +30,8 @@ namespace Depra.Sound.Source
 
 		public void Play(IAudioClip clip) => Source?.Play(clip);
 
-		public void Play(IAudioClip clip, ReadOnlySpan<AudioParameter> staticParams,
-			ReadOnlySpan<AudioParameter> dynamicParams) => Source?.Play(clip, staticParams, dynamicParams);
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> staticParams,
+			ReadOnlySpan<AudioParam> dynamicParams) => Source?.Play(clip, staticParams, dynamicParams);
 
 		void IAudioSource.Stop() => Source?.Stop();
 

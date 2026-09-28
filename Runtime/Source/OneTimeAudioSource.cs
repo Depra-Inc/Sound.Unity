@@ -44,7 +44,7 @@ namespace Depra.Sound.Source
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}
 
-		public void Play(IAudioClip clip, ReadOnlySpan<AudioParameter> staticParams, ReadOnlySpan<AudioParameter> dynamicParams)
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> staticParams, ReadOnlySpan<AudioParam> dynamicParams)
 		{
 			TryStopSelfDestroy();
 			_source.Play(clip, staticParams, dynamicParams);

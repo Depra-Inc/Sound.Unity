@@ -8,11 +8,11 @@ using UnityEngine;
 namespace Depra.Sound.Configuration
 {
 	// Editor (authoring) types: serialized in the inspector,
-	// each compiles into a single AudioParameter.
+	// each compiles into a single AudioParam.
 
 	public interface IAudioEventParameter
 	{
-		AudioParameter Compile();
+		AudioParam Compile();
 	}
 
 	[Serializable]
@@ -23,7 +23,7 @@ namespace Depra.Sound.Configuration
 
 		public VolumeParameter(float value) => _value = value;
 
-		readonly AudioParameter IAudioEventParameter.Compile() => AudioParameter.Float(AudioParameterId.Volume, _value);
+		readonly AudioParam IAudioEventParameter.Compile() => AudioParam.Float(AudioParamId.Volume, _value);
 	}
 
 	[Serializable]
@@ -35,7 +35,7 @@ namespace Depra.Sound.Configuration
 
 		public LoopParameter(bool value) => _value = value;
 
-		readonly AudioParameter IAudioEventParameter.Compile() => AudioParameter.Bool(AudioParameterId.Loop, _value);
+		readonly AudioParam IAudioEventParameter.Compile() => AudioParam.Bool(AudioParamId.Loop, _value);
 	}
 
 	[Serializable]
@@ -46,7 +46,7 @@ namespace Depra.Sound.Configuration
 
 		public PanParameter(float value) => _value = value;
 
-		readonly AudioParameter IAudioEventParameter.Compile() => AudioParameter.Float(AudioParameterId.Pan, _value);
+		readonly AudioParam IAudioEventParameter.Compile() => AudioParam.Float(AudioParamId.Pan, _value);
 	}
 
 	[Serializable]
@@ -57,7 +57,7 @@ namespace Depra.Sound.Configuration
 
 		public PitchParameter(float value) => _value = value;
 
-		readonly AudioParameter IAudioEventParameter.Compile() => AudioParameter.Float(AudioParameterId.Pitch, _value);
+		readonly AudioParam IAudioEventParameter.Compile() => AudioParam.Float(AudioParamId.Pitch, _value);
 	}
 
 	[Serializable]
@@ -68,7 +68,9 @@ namespace Depra.Sound.Configuration
 		[SerializeField] private string _name;
 		[SerializeField] private float _value;
 
-		readonly AudioParameter IAudioEventParameter.Compile() => UnityAudioParameters.LabeledFloat(_name, _value);
+		readonly AudioParam IAudioEventParameter.Compile() => AudioParam.CustomRef(
+			UnityAudioParamId.LabeledFloat, UnityAudioParamId.LabeledFloat,
+			_name, float0: _value);
 	}
 
 	[Serializable]
@@ -79,6 +81,8 @@ namespace Depra.Sound.Configuration
 		[SerializeField] private string _name;
 		[SerializeField] private int _value;
 
-		readonly AudioParameter IAudioEventParameter.Compile() => UnityAudioParameters.LabeledInt(_name, _value);
+		readonly AudioParam IAudioEventParameter.Compile() => AudioParam.CustomRef(
+			UnityAudioParamId.LabeledInt, UnityAudioParamId.LabeledInt,
+			_name, integerValue: _value);
 	}
 }

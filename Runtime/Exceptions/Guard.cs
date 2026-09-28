@@ -21,11 +21,12 @@ namespace Depra.Sound.Exceptions
 
 		[Conditional("SOUND_DEBUG")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void AgainstUnsupportedType(Type actual, Type required)
+		public static void AgainstUnsupportedType(IAudioClip actual, Type requiredType)
 		{
-			if (actual != required)
+			var actualType = actual.GetType();
+			if (actualType!= requiredType)
 			{
-				throw new UnsupportedClipTypeException(actual, required);
+				throw new AudioClipTypeUnsupported(actualType, requiredType);
 			}
 		}
 	}
