@@ -96,4 +96,18 @@ namespace Depra.Sound.Configuration
 
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}
+
+	public struct TransformParamDescription
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AudioParam Compile(Transform transform) =>
+			AudioParam.CustomRef(UnityAudioParamId.Transform, UnityAudioParamId.Transform, transform);
+	}
+
+	public struct PositionParamDescription
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AudioParam Compile(Vector3 position) =>
+			AudioParam.Vector3(UnityAudioParamId.Position, position.x, position.y, position.z);
+	}
 }
