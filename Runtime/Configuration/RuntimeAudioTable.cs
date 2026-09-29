@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Depra.Sound.Configuration;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Depra.Sound.Runtime
@@ -22,36 +21,12 @@ namespace Depra.Sound.Runtime
 					continue;
 				}
 
-				foreach (var entry in bank.Events)
-				{
-					RegisterBank(bank, entry);
-				}
+				bank.Compile(_events);
 			}
 		}
 
 		public bool TryResolve(AudioEventId eventId, out IAudioEventDescription description) =>
 			_events.TryGetValue(eventId, out description);
-
-		private void RegisterBank(AudioBankAsset bank, AudioBankEntry entry)
-		{
-			if (entry.Description == null)
-			{
-				Debug.LogError($"Audio event '{entry.Name}' ({entry.Id.Value}) has no description.", bank);
-				return;
-			}
-
-			var runtimeEvent = entry.Description.Compile();
-			if (runtimeEvent == null)
-			{
-				Debug.LogError($"Audio event '{entry.Name}' ({entry.Id.Value}) could not be compiled.", bank);
-				return;
-			}
-
-			if (!_events.TryAdd(entry.Id, runtimeEvent))
-			{
-				Debug.LogError($"Duplicate audio event ID '{entry.Id}' in bank '{bank.name}'.", bank);
-			}
-		}
 	}
 
 	/// <summary>
@@ -92,22 +67,20 @@ namespace Depra.Sound.Runtime
 	/// </summary>
 	public sealed class RuntimeAudioEventContainer : IAudioEventDescription
 	{
-		private readonly IAudioEventDescription[] _variants;
-		private readonly AudioEventContainer.Strategy _strategy;
+		private readonly IAudioClip[] _clips;
+		private readonly AudioParam[] _staticParams;
+		private readonly AudioEventContainer.PlaybackMode _playbackMode;
 
 		private int _nextSequenceIndex;
 		private int _selectedVariantIndex = -1;
 
-		public RuntimeAudioEventContainer(AudioEventContainer.Strategy strategy, List<IAudioEventDescription> variants,
-			IAudioEventContract contract)
+		public RuntimeAudioEventContainer(AudioEventContainer.PlaybackMode playbackMode, List<IAudioClip> clips,
+			IAudioEventContract contract, AudioParam[] staticParams)
 		{
 			Contract = contract;
-			_strategy = strategy;
-			_variants = new IAudioEventDescription[variants.Count];
-			for (var index = 0; index < _variants.Length; index++)
-			{
-				_variants[index] = variants[index];
-			}
+			_clips = clips.ToArray();
+			_playbackMode = playbackMode;
+			_staticParams = staticParams;
 		}
 
 		public IAudioClip Clip
@@ -115,31 +88,27 @@ namespace Depra.Sound.Runtime
 			get
 			{
 				_selectedVariantIndex = SelectVariantIndex();
-				return _selectedVariantIndex >= 0 ? _variants[_selectedVariantIndex].Clip : null;
+				return _selectedVariantIndex >= 0 ? _clips[_selectedVariantIndex] : null;
 			}
 		}
 
 		public IAudioEventContract Contract { get; }
-
-		public ReadOnlySpan<AudioParam> StaticParameters =>
-			(uint)_selectedVariantIndex < (uint)_variants.Length
-				? _variants[_selectedVariantIndex].StaticParameters
-				: ReadOnlySpan<AudioParam>.Empty;
+		ReadOnlySpan<AudioParam> IAudioEventDescription.StaticParameters => _staticParams;
 
 		private int SelectVariantIndex()
 		{
-			if (_variants.Length == 0)
+			if (_clips.Length == 0)
 			{
 				return -1;
 			}
 
-			if (_strategy == AudioEventContainer.Strategy.Random)
+			if (_playbackMode == AudioEventContainer.PlaybackMode.RANDOM)
 			{
-				return Random.Range(0, _variants.Length);
+				return Random.Range(0, _clips.Length);
 			}
 
 			var selected = _nextSequenceIndex;
-			_nextSequenceIndex = (_nextSequenceIndex + 1) % _variants.Length;
+			_nextSequenceIndex = (_nextSequenceIndex + 1) % _clips.Length;
 
 			return selected;
 		}

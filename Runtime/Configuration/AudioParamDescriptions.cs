@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2026 Depra <n.melnikov@depra.org>
 
 using System;
 using System.Runtime.CompilerServices;
@@ -11,14 +11,14 @@ namespace Depra.Sound.Configuration
 	// Editor (authoring) types: serialized in the inspector,
 	// each compiles into a single AudioParam.
 
-	public interface IAudioEventParameter
+	public interface IAudioParamDescription
 	{
 		AudioParam Compile();
 	}
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Volume")]
-	public struct VolumeParameter : IAudioEventParameter
+	public struct VolumeParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private float _value;
 
@@ -31,7 +31,7 @@ namespace Depra.Sound.Configuration
 	[Serializable]
 	[SerializeReferenceMenuPath("Loop")]
 	[SerializeReferenceIcon("d_preAudioLoopOff")]
-	public struct LoopParameter : IAudioEventParameter
+	public struct LoopParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private bool _value;
 
@@ -43,7 +43,7 @@ namespace Depra.Sound.Configuration
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Pan")]
-	public struct PanParameter : IAudioEventParameter
+	public struct PanParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private float _value;
 
@@ -55,7 +55,7 @@ namespace Depra.Sound.Configuration
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Pitch")]
-	public struct PitchParameter : IAudioEventParameter
+	public struct PitchParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private float _value;
 
@@ -68,7 +68,7 @@ namespace Depra.Sound.Configuration
 	[Serializable]
 	[SerializeReferenceMenuPath("Labeled Float")]
 	[SerializeReferenceIcon("d_FilterByLabel")]
-	public struct LabeledFloatParameter : IAudioEventParameter
+	public struct LabeledFloatParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private string _name;
 		[SerializeField] private float _value;
@@ -84,7 +84,7 @@ namespace Depra.Sound.Configuration
 	[Serializable]
 	[SerializeReferenceMenuPath("Labeled Integer")]
 	[SerializeReferenceIcon("d_FilterByLabel")]
-	public struct LabeledIntegerParameter : IAudioEventParameter
+	public struct LabeledIntegerParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private string _name;
 		[SerializeField] private int _value;

@@ -8,7 +8,7 @@ namespace Depra.Sound.Configuration
 	{
 		bool Validate(ReadOnlySpan<AudioParam> parameters, out string error);
 	}
-	
+
 	public sealed class AudioEventRequirements : IAudioEventContract
 	{
 		private readonly List<IAudioEventRequirement> _requirements;
@@ -28,7 +28,6 @@ namespace Depra.Sound.Configuration
 			return true;
 		}
 	}
-
 
 	[Serializable]
 	[SerializeReferenceIcon("d_Transform Icon")]

@@ -48,14 +48,6 @@ namespace Depra.Sound.Editor
 			}
 
 			LIBRARY_EDITOR.Draw(settings);
-			if (GUILayout.Button("Import FMOD Bank"))
-			{
-				if (!EditorApplication.ExecuteMenuItem("Depra/Sound/Import FMOD Bank"))
-				{
-					Debug.LogWarning(
-						"The FMOD bank importer is unavailable. Check that Depra.Sound.Fmod is installed.");
-				}
-			}
 		}
 
 		private static AudioProjectSettings CreateSettingsAsset()

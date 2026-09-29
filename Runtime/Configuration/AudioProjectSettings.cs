@@ -14,7 +14,7 @@ namespace Depra.Sound.Configuration
 		[SerializeField, HideInInspector] private uint _nextEventIdHigh;
 		[SerializeField, HideInInspector] private bool _eventIdCounterExhausted;
 
-		public IReadOnlyList<AudioBankAsset> Banks => _banks;
+		public List<AudioBankAsset> Banks => _banks;
 
 		public RuntimeAudioTable Compile() => new(_banks);
 
@@ -54,9 +54,9 @@ namespace Depra.Sound.Configuration
 					continue;
 				}
 
-				foreach (var entry in bank.Events)
+				if (bank.Contains(id))
 				{
-					if (entry.Id.Value == id) return true;
+					return true;
 				}
 			}
 

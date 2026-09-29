@@ -68,10 +68,9 @@ namespace Depra.Sound.Editor
 					continue;
 				}
 
-				foreach (var entry in bank.Events)
+				foreach (var (id, name) in bank.GetAllEventNames())
 				{
-					var name = string.IsNullOrWhiteSpace(entry.Name) ? "Unnamed Event" : entry.Name;
-					options.Add(new EventOption(entry.Id.Value, $"{name} ({entry.Id.Value}) - {bank.name}"));
+					options.Add(new EventOption(id, name));
 				}
 			}
 
