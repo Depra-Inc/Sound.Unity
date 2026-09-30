@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Depra.Sound.Configuration;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace Depra.Sound.Editor
+namespace Depra.Sound.Unity.Editor
 {
 	internal sealed class AudioLibraryEditorGUI
 	{
@@ -20,6 +21,7 @@ namespace Depra.Sound.Editor
 		private Vector2 _bankScroll;
 		private float _bankPaneWidth = 230f;
 		private float _availableWidth;
+		private string _eventSearch = string.Empty;
 
 		internal void Draw(AudioProjectSettings table)
 		{
@@ -42,19 +44,20 @@ namespace Depra.Sound.Editor
 			RepairDuplicateIds();
 			_tableObject.Update();
 			var banks = _tableObject.FindProperty("_banks");
+			_eventSearch = EditorGUILayout.TextField(" Search in Global Lookup", _eventSearch, EditorStyles.textField);
 
 			if (width >= WIDE_LAYOUT_WIDTH)
 			{
 				using (new EditorGUILayout.HorizontalScope())
 				{
-					DrawBankPane(250f, true);
+					DrawBankPane(true);
 					DrawPaneSplitter();
 					DrawEventPane(banks);
 				}
 			}
 			else
 			{
-				DrawBankPane(170f, false);
+				DrawBankPane(false);
 				EditorGUILayout.Space(6f);
 				DrawEventPane(banks);
 			}
@@ -65,24 +68,24 @@ namespace Depra.Sound.Editor
 			}
 		}
 
-		private void DrawBanks(float maxHeight)
-		{
-			_banks.index = _bankIndex;
-			var height = Mathf.Min(_banks.GetHeight(), maxHeight);
-			_bankScroll = EditorGUILayout.BeginScrollView(_bankScroll, GUILayout.Height(height));
-			_banks.DoList(GUILayoutUtility.GetRect(0f, _banks.GetHeight(), GUILayout.ExpandWidth(true)));
-			EditorGUILayout.EndScrollView();
-		}
-
-		private void DrawBankPane(float maxHeight, bool wideLayout)
+		private void DrawBankPane(bool wideLayout)
 		{
 			using (new EditorGUILayout.VerticalScope(wideLayout
 				       ? GUILayout.Width(_bankPaneWidth)
 				       : GUILayout.ExpandWidth(true)))
 			{
-				DrawBanks(maxHeight);
+				DrawBanks();
 				DrawImportButtons();
 			}
+		}
+
+		private void DrawBanks()
+		{
+			_banks.index = _bankIndex;
+			var height = _banks.GetHeight();
+			_bankScroll = EditorGUILayout.BeginScrollView(_bankScroll, GUILayout.Height(height));
+			_banks.DoList(GUILayoutUtility.GetRect(0f, height, GUILayout.ExpandWidth(true)));
+			EditorGUILayout.EndScrollView();
 		}
 
 		private void DrawImportButtons()
@@ -204,8 +207,32 @@ namespace Depra.Sound.Editor
 			{
 				index = _bankIndex,
 				elementHeight = EditorGUIUtility.singleLineHeight + 2f,
-				drawHeaderCallback = rect => EditorGUI.LabelField(rect, $"Banks ({banks.arraySize})"),
-				drawElementCallback = (rect, index, _, __) =>
+				elementHeightCallback = index =>
+				{
+					if (index >= 0 && index < banks.arraySize)
+					{
+						return MatchesBankSearch(banks.GetArrayElementAtIndex(index))
+							? EditorGUIUtility.singleLineHeight + 2f
+							: 0f;
+					}
+
+					return 0f;
+				},
+				drawHeaderCallback = rect =>
+				{
+					var found = 0;
+					var total = banks.arraySize;
+					for (var index = 0; index < total; index++)
+					{
+						if (MatchesBankSearch(banks.GetArrayElementAtIndex(index)))
+						{
+							found++;
+						}
+					}
+
+					EditorGUI.LabelField(rect, $"Banks ({found}/{total})");
+				},
+				drawElementCallback = (rect, index, _, _) =>
 				{
 					if (index >= banks.arraySize)
 					{
@@ -213,6 +240,11 @@ namespace Depra.Sound.Editor
 					}
 
 					var bankProperty = banks.GetArrayElementAtIndex(index);
+					if (!MatchesBankSearch(bankProperty))
+					{
+						return;
+					}
+
 					rect.y += 1f;
 					rect.height = EditorGUIUtility.singleLineHeight;
 					if (Event.current.type == EventType.MouseDown && Event.current.button == 0 &&
@@ -222,9 +254,29 @@ namespace Depra.Sound.Editor
 						_banks.index = index;
 					}
 
+					var bankInstance = bankProperty.objectReferenceValue as AudioBankAsset;
+					if (bankInstance != null && !string.IsNullOrEmpty(bankInstance.IconPath))
+					{
+						var bankIcon = EditorGUIUtility.Load(bankInstance.IconPath) as Texture2D;
+						if (bankIcon != null)
+						{
+							var iconRect = new Rect(rect.x, rect.y, rect.height, rect.height);
+							GUI.DrawTexture(iconRect, bankIcon, ScaleMode.ScaleToFit);
+							rect.x += rect.height + 2f;
+							rect.width -= rect.height + 2f;
+						}
+					}
+
 					EditorGUI.PropertyField(rect, bankProperty, GUIContent.none);
 				},
-				onSelectCallback = list => SelectBank(list.index),
+				onSelectCallback = list =>
+				{
+					if (list.index >= 0 && list.index < banks.arraySize &&
+					    MatchesBankSearch(banks.GetArrayElementAtIndex(list.index)))
+					{
+						SelectBank(list.index);
+					}
+				},
 				onAddCallback = list =>
 				{
 					banks.InsertArrayElementAtIndex(banks.arraySize);
@@ -235,12 +287,6 @@ namespace Depra.Sound.Editor
 				onReorderCallback = list => SelectBank(list.index),
 				onRemoveCallback = list =>
 				{
-					if (!EditorUtility.DisplayDialog("Remove Bank", "Remove this bank from the table?",
-						    "Remove", "Cancel"))
-					{
-						return;
-					}
-
 					DeleteArrayElement(banks, list.index);
 					_bankIndex = Mathf.Clamp(_bankIndex, 0, banks.arraySize - 1);
 				}
@@ -253,9 +299,10 @@ namespace Depra.Sound.Editor
 			_banks = null;
 			if (_bankEditor != null)
 			{
-				UnityEngine.Object.DestroyImmediate(_bankEditor);
+				Object.DestroyImmediate(_bankEditor);
 				_bankEditor = null;
 			}
+
 			_bankIndex = 0;
 		}
 
@@ -276,11 +323,25 @@ namespace Depra.Sound.Editor
 				var changed = false;
 				for (var index = 0; index < entries.arraySize; index++)
 				{
-					var id = entries.GetArrayElementAtIndex(index).FindPropertyRelative("Id")
+					var id = entries.GetArrayElementAtIndex(index)
+						.FindPropertyRelative("Id")
 						.FindPropertyRelative("Value");
-					if (usedIds.Add(id.ulongValue)) continue;
-					if (!changed) Undo.RecordObject(bank, "Regenerate duplicate audio event IDs");
-					if (!changed) Undo.RecordObject(_table, "Advance audio event ID counter");
+
+					if (usedIds.Add(id.ulongValue))
+					{
+						continue;
+					}
+
+					if (!changed)
+					{
+						Undo.RecordObject(bank, "Regenerate duplicate audio event IDs");
+					}
+
+					if (!changed)
+					{
+						Undo.RecordObject(_table, "Advance audio event ID counter");
+					}
+
 					id.ulongValue = _table.AllocateEventId(usedIds, bank);
 					usedIds.Add(id.ulongValue);
 					changed = true;
@@ -304,9 +365,10 @@ namespace Depra.Sound.Editor
 
 			if (_bankEditor != null)
 			{
-				UnityEngine.Object.DestroyImmediate(_bankEditor);
+				Object.DestroyImmediate(_bankEditor);
 				_bankEditor = null;
 			}
+
 			_bankIndex = index;
 			EditorWindow.focusedWindow?.Repaint();
 		}
@@ -326,5 +388,23 @@ namespace Depra.Sound.Editor
 			}
 		}
 
+		private bool MatchesBankSearch(SerializedProperty bankProperty)
+		{
+			if (string.IsNullOrWhiteSpace(_eventSearch))
+			{
+				return true;
+			}
+
+			var bank = bankProperty.objectReferenceValue as AudioBankAsset;
+			if (bank == null)
+			{
+				return false;
+			}
+
+			var search = _eventSearch.Trim();
+			return bank.name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+			       bank.GetAllEventNames()
+				       .Any(pair => pair.label.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+		}
 	}
 }

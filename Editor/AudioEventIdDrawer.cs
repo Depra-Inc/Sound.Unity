@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using Depra.Sound.Configuration;
 using UnityEditor;
 using UnityEngine;
 
-namespace Depra.Sound.Editor
+namespace Depra.Sound.Unity.Editor
 {
 	[CustomPropertyDrawer(typeof(AudioEventId))]
 	internal sealed class AudioEventIdDrawer : PropertyDrawer

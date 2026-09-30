@@ -1,10 +1,8 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
 // © 2024-2025 Depra <n.melnikov@depra.org>
 
-using System;
 using System.Runtime.CompilerServices;
 using Depra.SerializeReference.Extensions;
-using Depra.Sound.Exceptions;
 using JetBrains.Annotations;
 using UnityEngine;
 using static Depra.Sound.Module;

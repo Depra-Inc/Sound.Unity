@@ -3,9 +3,9 @@
 
 using System;
 
-namespace Depra.Sound.Exceptions
+namespace Depra.Sound
 {
-	internal sealed class AudioClipTypeUnsupported : Exception
+	public sealed class AudioClipTypeUnsupported : Exception
 	{
 		public AudioClipTypeUnsupported(Type clipType, Type sourceType) :
 			base($"Clip type {clipType.Name} is not supported by source type {sourceType.Name}") { }

@@ -1,4 +1,4 @@
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	public readonly struct UnityAudioParamId
 	{

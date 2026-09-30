@@ -4,7 +4,7 @@
 using Depra.SerializeReference.Extensions;
 using UnityEngine;
 
-namespace Depra.Sound.Unity
+namespace Depra.Sound.Unity.Builtin
 {
 	[System.Serializable]
 	[SerializeReferenceIcon("d_AudioClip Icon")]

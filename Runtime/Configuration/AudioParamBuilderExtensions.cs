@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	public static class AudioParamBuilderExtensions
 	{

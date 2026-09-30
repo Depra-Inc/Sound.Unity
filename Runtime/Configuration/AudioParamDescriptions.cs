@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using Depra.SerializeReference.Extensions;
 using UnityEngine;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	// Editor (authoring) types: serialized in the inspector,
 	// each compiles into a single AudioParam.

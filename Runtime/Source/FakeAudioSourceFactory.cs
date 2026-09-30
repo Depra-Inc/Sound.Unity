@@ -4,7 +4,7 @@
 using System;
 using UnityEngine;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound
 {
 	[Serializable]
 	[Obsolete("Use SceneAudioSourceRef instead.")]

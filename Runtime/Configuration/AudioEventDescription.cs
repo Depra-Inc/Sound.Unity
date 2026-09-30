@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Depra.SerializeReference.Extensions;
 using Depra.Sound.Runtime;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	[Serializable]
 	public sealed class AudioEventDescription

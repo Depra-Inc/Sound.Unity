@@ -4,13 +4,11 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Depra.Sound.Configuration;
-using Depra.Sound.Exceptions;
 using UnityEngine;
 using static Depra.Sound.Module;
 using Debug = UnityEngine.Debug;
 
-namespace Depra.Sound.Unity
+namespace Depra.Sound.Unity.Builtin
 {
 	[RequireComponent(typeof(AudioSource))]
 	[AddComponentMenu(MENU_PATH + nameof(UnityAudioSource), DEFAULT_ORDER)]

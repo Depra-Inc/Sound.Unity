@@ -5,9 +5,9 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Depra.Sound.Exceptions
+namespace Depra.Sound
 {
-	public static class Guard
+	internal static class Guard
 	{
 		[Conditional("SOUND_DEBUG")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -2,9 +2,8 @@
 // © 2024-2025 Depra <n.melnikov@depra.org>
 
 using System;
-using Depra.Sound.Exceptions;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound
 {
 	public sealed class LambdaBasedAudioSourceFactory : IAudioSourceFactory
 	{

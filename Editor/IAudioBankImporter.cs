@@ -1,4 +1,4 @@
-namespace Depra.Sound.Editor
+namespace Depra.Sound.Unity.Editor
 {
 	public interface IAudioBankImporter
 	{

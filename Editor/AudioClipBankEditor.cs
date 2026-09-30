@@ -1,9 +1,8 @@
-using Depra.Sound.Configuration;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Depra.Sound.Editor
+namespace Depra.Sound.Unity.Editor
 {
 	[CustomEditor(typeof(AudioClipBank))]
 	internal sealed class AudioClipBankEditor : UnityEditor.Editor, IAudioBankEmbeddedEditor

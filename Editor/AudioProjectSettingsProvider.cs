@@ -1,8 +1,7 @@
-using Depra.Sound.Configuration;
 using UnityEditor;
 using UnityEngine;
 
-namespace Depra.Sound.Editor
+namespace Depra.Sound.Unity.Editor
 {
 	public static class AudioProjectSettingsProvider
 	{

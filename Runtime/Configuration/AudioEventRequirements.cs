@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Depra.SerializeReference.Extensions;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	public interface IAudioEventRequirement
 	{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Depra.Sound.Runtime;
 using UnityEngine;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	// Editor (authoring) type: the single ScriptableObject saved under Project Settings.
 	// Holds the project's banks and allocates unique event IDs across all of them. Never touched at runtime.

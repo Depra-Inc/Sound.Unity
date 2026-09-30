@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using static Depra.Sound.Module;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	[CreateAssetMenu(menuName = MENU_PATH + "Audio Bank", fileName = "New Audio Bank", order = DEFAULT_ORDER)]
 	public sealed class AudioClipBank : AudioBankAsset

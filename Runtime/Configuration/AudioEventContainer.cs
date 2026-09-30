@@ -5,7 +5,7 @@ using Depra.Sound.Runtime;
 using UnityEngine;
 using static Depra.Sound.Module;
 
-namespace Depra.Sound.Configuration
+namespace Depra.Sound
 {
 	[CreateAssetMenu(fileName = "New Audio Container", menuName = MENU_PATH + "Audio Container", order = DEFAULT_ORDER)]
 	public sealed class AudioEventContainer : ScriptableObject

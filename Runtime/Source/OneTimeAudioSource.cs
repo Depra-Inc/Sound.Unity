@@ -6,7 +6,7 @@ using System.Collections;
 using UnityEngine;
 using static Depra.Sound.Module;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound
 {
 	[AddComponentMenu(MENU_PATH + nameof(OneTimeAudioSource), DEFAULT_ORDER)]
 	public sealed class OneTimeAudioSource : MonoBehaviour, IAudioSource
