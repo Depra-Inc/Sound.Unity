@@ -28,10 +28,14 @@ namespace Depra.Sound.Unity.Editor
 
 		private void DrawEventList()
 		{
+			if (_events != null && _events.serializedProperty.serializedObject.targetObject == serializedObject.targetObject)
+			{
+				return;
+			}
+
 			var entries = serializedObject.FindProperty("_events");
 			_events = new ReorderableList(serializedObject, entries, false, true, true, true)
 			{
-				index = entries.arraySize > 0 ? 0 : -1,
 				elementHeightCallback = index =>
 					index >= entries.arraySize
 						? EditorGUIUtility.singleLineHeight
@@ -52,10 +56,14 @@ namespace Depra.Sound.Unity.Editor
 
 		private void DrawContainerList()
 		{
+			if (_containers != null && _containers.serializedProperty.serializedObject.targetObject == serializedObject.targetObject)
+			{
+				return;
+			}
+
 			var entries = serializedObject.FindProperty("_containers");
 			_containers = new ReorderableList(serializedObject, entries, true, true, true, true)
 			{
-				index = entries.arraySize > 0 ? 0 : -1,
 				elementHeightCallback = index => index >= entries.arraySize
 					? EditorGUIUtility.singleLineHeight
 					: GetContainerHeight(entries.GetArrayElementAtIndex(index)),
