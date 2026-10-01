@@ -1,12 +1,19 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Depra.Sound.Unity.Editor
 {
 	[CustomPropertyDrawer(typeof(AudioEventId))]
 	internal sealed class AudioEventIdDrawer : PropertyDrawer
 	{
+		private const float DROPDOWN_WIDTH = 420f;
+		private const float DROPDOWN_HEIGHT = 420f;
+
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
 			EditorGUIUtility.singleLineHeight;
 
@@ -32,7 +39,7 @@ namespace Depra.Sound.Unity.Editor
 			var currentLabel = GetCurrentLabel(options, value.ulongValue);
 			if (EditorGUI.DropdownButton(prefixRect, new GUIContent(currentLabel), FocusType.Keyboard))
 			{
-				ShowHierarchicalMenu(options, value);
+				ShowSearchablePopup(prefixRect, options, value);
 			}
 
 			EditorGUI.EndProperty();
@@ -73,44 +80,41 @@ namespace Depra.Sound.Unity.Editor
 			return string.IsNullOrEmpty(option.Label) ? "None" : option.Label;
 		}
 
-		private static void ShowHierarchicalMenu(List<EventOption> options, SerializedProperty value)
+		private static void ShowSearchablePopup(Rect activatorRect, List<EventOption> options, SerializedProperty value)
 		{
-			var menu = new GenericMenu();
-			menu.AddItem(new GUIContent("None"), value.ulongValue == 0, () =>
-			{
-				value.ulongValue = 0;
-				value.serializedObject.ApplyModifiedProperties();
-			});
+			var targetObjects = value.serializedObject.targetObjects;
+			var dropdown = new EventAdvancedDropdown(new AdvancedDropdownState(), options,
+				selectedId => ApplySelection(targetObjects, value.propertyPath, selectedId),
+				new Vector2(DROPDOWN_WIDTH, DROPDOWN_HEIGHT));
 
-			menu.AddSeparator("");
-			var groupedByBank = new Dictionary<string, List<EventOption>>();
-			foreach (var option in options)
-			{
-				if (!groupedByBank.ContainsKey(option.BankName))
-				{
-					groupedByBank[option.BankName] = new List<EventOption>();
-				}
+			dropdown.Show(activatorRect);
+		}
 
-				groupedByBank[option.BankName].Add(option);
+		private static void ApplySelection(Object[] targetObjects, string propertyPath, ulong selectedId)
+		{
+			if (targetObjects == null || targetObjects.Length == 0)
+			{
+				return;
 			}
 
-			foreach (var bankName in groupedByBank.Keys)
+			foreach (var target in targetObjects)
 			{
-				var bankEvents = groupedByBank[bankName];
-				foreach (var option in bankEvents)
+				if (!target)
 				{
-					var menuPath = $"{bankName}/{option.Label}";
-					var optionId = option.Id;
-					var isSelected = value.ulongValue == optionId;
-					menu.AddItem(new GUIContent(menuPath), isSelected, () =>
-					{
-						value.ulongValue = optionId;
-						value.serializedObject.ApplyModifiedProperties();
-					});
+					continue;
 				}
-			}
 
-			menu.ShowAsContext();
+				var serializedObject = new SerializedObject(target);
+				var property = serializedObject.FindProperty(propertyPath);
+				if (property == null)
+				{
+					continue;
+				}
+
+				property.ulongValue = selectedId;
+				serializedObject.ApplyModifiedProperties();
+				EditorUtility.SetDirty(target);
+			}
 		}
 
 		private readonly struct EventOption
@@ -124,6 +128,58 @@ namespace Depra.Sound.Unity.Editor
 				Id = id;
 				Label = label;
 				BankName = bankName;
+			}
+		}
+
+		private sealed class EventAdvancedDropdown : AdvancedDropdown
+		{
+			private readonly List<EventOption> _options;
+			private readonly Action<ulong> _onSelected;
+
+			public EventAdvancedDropdown(AdvancedDropdownState state, List<EventOption> options,
+				Action<ulong> onSelected, Vector2 minSize) : base(state)
+			{
+				_options = options ?? new List<EventOption>();
+				_onSelected = onSelected;
+				minimumSize = minSize;
+			}
+
+			protected override AdvancedDropdownItem BuildRoot()
+			{
+				var root = new AdvancedDropdownItem("Audio Events");
+				root.AddChild(new EventDropdownItem("None", 0));
+
+				foreach (var group in _options
+					         .GroupBy(option => string.IsNullOrEmpty(option.BankName) ? "Other" : option.BankName)
+					         .OrderBy(group => group.Key, StringComparer.OrdinalIgnoreCase))
+				{
+					var bankItem = new AdvancedDropdownItem(group.Key);
+					foreach (var option in group.OrderBy(item => item.Label, StringComparer.OrdinalIgnoreCase))
+					{
+						bankItem.AddChild(new EventDropdownItem(option.Label, option.Id));
+					}
+
+					root.AddChild(bankItem);
+				}
+
+				return root;
+			}
+
+			protected override void ItemSelected(AdvancedDropdownItem item)
+			{
+				if (item is EventDropdownItem eventItem)
+				{
+					_onSelected?.Invoke(eventItem.EventId);
+				}
+			}
+		}
+
+		private sealed class EventDropdownItem : AdvancedDropdownItem
+		{
+			public readonly ulong EventId;
+			public EventDropdownItem(string name, ulong eventId) : base(name)
+			{
+				EventId = eventId;
 			}
 		}
 	}
