@@ -9,6 +9,15 @@ namespace Depra.Sound
 		bool Validate(ReadOnlySpan<AudioParam> parameters, out string error);
 	}
 
+	public sealed class EmptyContract : IAudioEventContract
+	{
+		bool IAudioEventContract.Validate(ReadOnlySpan<AudioParam> parameters, out string error)
+		{
+			error = null;
+			return true;
+		}
+	}
+
 	public sealed class AudioEventRequirements : IAudioEventContract
 	{
 		private readonly List<IAudioEventRequirement> _requirements;
