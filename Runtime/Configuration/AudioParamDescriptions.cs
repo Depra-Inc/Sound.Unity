@@ -74,9 +74,8 @@ namespace Depra.Sound
 		[SerializeField] private float _value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AudioParam Compile(string name, float value) => AudioParam.CustomRef(
-			UnityAudioParamId.LabeledFloat, UnityAudioParamId.LabeledFloat,
-			name, float0: value);
+		public static AudioParam Compile(string name, float value) =>
+			AudioParam.LabeledFloat(AudioParamId.Unknown, name, value);
 
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}
@@ -90,9 +89,23 @@ namespace Depra.Sound
 		[SerializeField] private int _value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AudioParam Compile(string name, int value) => AudioParam.CustomRef(
-			UnityAudioParamId.LabeledInt, UnityAudioParamId.LabeledInt,
-			name, integerValue: value);
+		public static AudioParam Compile(string name, int value) =>
+			AudioParam.LabeledInt(AudioParamId.Unknown, name, value);
+
+		public readonly AudioParam Compile() => Compile(_name, _value);
+	}
+
+	[Serializable]
+	[SerializeReferenceMenuPath("Labeled String")]
+	[SerializeReferenceIcon("d_FilterByLabel")]
+	public struct LabeledStringParamDescription : IAudioParamDescription
+	{
+		[SerializeField] private string _name;
+		[SerializeField] private string _value;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AudioParam Compile(string name, string value) =>
+			AudioParam.LabeledString(AudioParamId.Unknown, name, value);
 
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}

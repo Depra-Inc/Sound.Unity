@@ -45,6 +45,7 @@ namespace Depra.Sound.Unity.Editor
 			_tableObject.Update();
 			var banks = _tableObject.FindProperty("_banks");
 			_eventSearch = EditorGUILayout.TextField(" Search in Global Lookup", _eventSearch, EditorStyles.textField);
+			EnsureVisibleBankSelection(banks);
 
 			if (width >= WIDE_LAYOUT_WIDTH)
 			{
@@ -131,7 +132,7 @@ namespace Depra.Sound.Unity.Editor
 
 			if (_bankEditor is IAudioBankEmbeddedEditor embeddedEditor)
 			{
-				embeddedEditor.DrawEmbedded(_table);
+				embeddedEditor.DrawEmbedded(_table, _eventSearch);
 				return;
 			}
 
@@ -378,6 +379,37 @@ namespace Depra.Sound.Unity.Editor
 				? banks.GetArrayElementAtIndex(_bankIndex).objectReferenceValue as AudioBankAsset
 				: null;
 
+		private void EnsureVisibleBankSelection(SerializedProperty banks)
+		{
+			if (_bankIndex >= 0 && _bankIndex < banks.arraySize &&
+			    MatchesBankSearch(banks.GetArrayElementAtIndex(_bankIndex)))
+			{
+				return;
+			}
+
+			for (var index = 0; index < banks.arraySize; index++)
+			{
+				if (!MatchesBankSearch(banks.GetArrayElementAtIndex(index)))
+				{
+					continue;
+				}
+
+				SelectBank(index);
+				if (_banks != null)
+				{
+					_banks.index = index;
+				}
+
+				return;
+			}
+
+			SelectBank(-1);
+			if (_banks != null)
+			{
+				_banks.index = -1;
+			}
+		}
+
 		private static void DeleteArrayElement(SerializedProperty array, int index)
 		{
 			var size = array.arraySize;
@@ -402,9 +434,42 @@ namespace Depra.Sound.Unity.Editor
 			}
 
 			var search = _eventSearch.Trim();
-			return bank.name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-			       bank.GetAllEventNames()
-				       .Any(pair => pair.label.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0);
+			if (bank.name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+
+			var bankObject = new SerializedObject(bank);
+			var entries = bankObject.FindProperty("_events");
+			if (entries == null)
+			{
+				return false;
+			}
+
+			for (var index = 0; index < entries.arraySize; index++)
+			{
+				var entry = entries.GetArrayElementAtIndex(index);
+				var eventName = entry.FindPropertyRelative("Name")?.stringValue;
+				if (!string.IsNullOrEmpty(eventName) &&
+				    eventName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					return true;
+				}
+
+				var path = entry.FindPropertyRelative("Description")
+					?.FindPropertyRelative("_clip")
+					?.FindPropertyRelative("_event")
+					?.FindPropertyRelative("Path")
+					?.stringValue;
+
+				if (!string.IsNullOrEmpty(path) &&
+				    path.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

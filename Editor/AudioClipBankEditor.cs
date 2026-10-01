@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using System;
 
 namespace Depra.Sound.Unity.Editor
 {
@@ -10,13 +11,15 @@ namespace Depra.Sound.Unity.Editor
 		private ReorderableList _events;
 		private ReorderableList _containers;
 		private AudioProjectSettings _settings;
+		private string _eventSearch = string.Empty;
 
 		public override void OnInspectorGUI() =>
-			DrawEmbedded(AudioProjectSettingsProvider.LoadTable());
+			DrawEmbedded(AudioProjectSettingsProvider.LoadTable(), string.Empty);
 
-		public void DrawEmbedded(AudioProjectSettings settings)
+		public void DrawEmbedded(AudioProjectSettings settings, string eventSearch = "")
 		{
 			_settings = settings;
+			_eventSearch = eventSearch ?? string.Empty;
 			serializedObject.Update();
 			DrawEventList();
 			DrawContainerList();
@@ -39,8 +42,22 @@ namespace Depra.Sound.Unity.Editor
 				elementHeightCallback = index =>
 					index >= entries.arraySize
 						? EditorGUIUtility.singleLineHeight
-						: GetEventHeight(entries.GetArrayElementAtIndex(index)),
-				drawHeaderCallback = rect => EditorGUI.LabelField(rect, $"Events ({entries.arraySize})"),
+						: MatchesEventSearch(entries.GetArrayElementAtIndex(index))
+							? GetEventHeight(entries.GetArrayElementAtIndex(index))
+							: 0f,
+				drawHeaderCallback = rect =>
+				{
+					var matched = 0;
+					for (var index = 0; index < entries.arraySize; index++)
+					{
+						if (MatchesEventSearch(entries.GetArrayElementAtIndex(index)))
+						{
+							matched++;
+						}
+					}
+
+					EditorGUI.LabelField(rect, $"Events ({matched}/{entries.arraySize})");
+				},
 				drawElementCallback = (rect, index, _, _) => DrawEventRow(rect, entries, index),
 				onAddCallback = list => AddEvent(entries, list),
 				onRemoveCallback = list =>
@@ -156,7 +173,7 @@ namespace Depra.Sound.Unity.Editor
 			return line + 2f + line + 2f + line + 8f;
 		}
 
-		private static void DrawEventRow(Rect rect, SerializedProperty entries, int index)
+		private void DrawEventRow(Rect rect, SerializedProperty entries, int index)
 		{
 			if (index >= entries.arraySize)
 			{
@@ -164,6 +181,10 @@ namespace Depra.Sound.Unity.Editor
 			}
 
 			var entry = entries.GetArrayElementAtIndex(index);
+			if (!MatchesEventSearch(entry))
+			{
+				return;
+			}
 			var name = entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Name));
 			var id = entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Id));
 			var header = new Rect(rect.x, rect.y + 2f, rect.width, EditorGUIUtility.singleLineHeight);
@@ -232,6 +253,20 @@ namespace Depra.Sound.Unity.Editor
 
 		private static void SetId(SerializedProperty id, ulong value) =>
 			id.FindPropertyRelative("Value").ulongValue = value;
+
+		private bool MatchesEventSearch(SerializedProperty eventEntry)
+		{
+			if (string.IsNullOrWhiteSpace(_eventSearch))
+			{
+				return true;
+			}
+
+			var search = _eventSearch.Trim();
+			var eventName = eventEntry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Name))?.stringValue;
+			return !string.IsNullOrEmpty(eventName) &&
+			       eventName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
 	}
 }
 
