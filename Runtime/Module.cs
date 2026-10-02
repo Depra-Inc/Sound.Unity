@@ -6,7 +6,7 @@ namespace Depra.Sound
 	internal static class Module
 	{
 		public const int DEFAULT_ORDER = 52;
-		public const string MENU_PATH = "Sound/";
+		public const string MENU_PATH = "Depra/Sound/";
 		public const string LOG_FORMAT = "[Sound] {0}";
 	}
 }
