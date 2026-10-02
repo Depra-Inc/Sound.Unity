@@ -8,17 +8,16 @@ namespace Depra.Sound.Runtime
 	/// </summary>
 	public sealed class RuntimeAudioEventContainer : IAudioEventDescription
 	{
-		private readonly IAudioClip[] _clips;
+		private readonly IAudioEventDescription[] _events;
 		private readonly AudioEventContainer.PlaybackMode _playbackMode;
 
 		private int _nextSequenceIndex;
 		private int _selectedVariantIndex = -1;
 
-		internal RuntimeAudioEventContainer(AudioEventContainer.PlaybackMode playbackMode, IAudioClip[] clips,
-			IAudioEventContract contract)
+		internal RuntimeAudioEventContainer(AudioEventContainer.PlaybackMode playbackMode,
+			IAudioEventDescription[] events)
 		{
-			_clips = clips;
-			Contract = contract;
+			_events = events;
 			_playbackMode = playbackMode;
 		}
 
@@ -28,30 +27,47 @@ namespace Depra.Sound.Runtime
 			get => GetSelectedClip();
 		}
 
-		public IAudioEventContract Contract { get; }
+		public IAudioEventContract Contract
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => GetSelectedContract();
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private IAudioClip GetSelectedClip()
 		{
 			_selectedVariantIndex = SelectVariantIndex();
-			return _selectedVariantIndex >= 0 ? _clips[_selectedVariantIndex] : null;
+			return _selectedVariantIndex >= 0 ? _events[_selectedVariantIndex].Clip : null;
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private IAudioEventContract GetSelectedContract()
+		{
+			if (_selectedVariantIndex < 0 || _selectedVariantIndex >= _events.Length)
+			{
+				_selectedVariantIndex = SelectVariantIndex();
+			}
+
+			return _selectedVariantIndex >= 0
+				? _events[_selectedVariantIndex].Contract
+				: AudioEventContract.EMPTY;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private int SelectVariantIndex()
 		{
-			if (_clips.Length == 0)
+			if (_events.Length == 0)
 			{
 				return -1;
 			}
 
 			if (_playbackMode == AudioEventContainer.PlaybackMode.RANDOM)
 			{
-				return Random.Range(0, _clips.Length);
+				return Random.Range(0, _events.Length);
 			}
 
 			var selected = _nextSequenceIndex;
-			_nextSequenceIndex = (_nextSequenceIndex + 1) % _clips.Length;
+			_nextSequenceIndex = (_nextSequenceIndex + 1) % _events.Length;
 
 			return selected;
 		}

@@ -27,7 +27,7 @@ namespace Depra.Sound
 
 			foreach (var entry in _containers)
 			{
-				map.TryAdd(entry.Id, entry.Container.Compile());
+				map.TryAdd(entry.Id, entry.Container.Compile(map));
 			}
 		}
 
