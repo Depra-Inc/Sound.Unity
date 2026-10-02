@@ -5,8 +5,8 @@ using System;
 
 namespace Depra.Sound.Unity.Editor
 {
-	[CustomEditor(typeof(CustomAudioBank))]
-	internal sealed class AudioClipBankEditor : UnityEditor.Editor, IAudioBankEmbeddedEditor
+	[CustomEditor(typeof(AudioEventBank))]
+	internal sealed class AudioEventBankEditor : UnityEditor.Editor, IAudioBankEmbeddedEditor
 	{
 		private ReorderableList _events;
 		private ReorderableList _containers;
@@ -109,12 +109,12 @@ namespace Depra.Sound.Unity.Editor
 			var index = entries.arraySize;
 			entries.InsertArrayElementAtIndex(index);
 			var entry = entries.GetArrayElementAtIndex(index);
-			entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Name)).stringValue = $"Event {index + 1}";
+			entry.FindPropertyRelative(nameof(AudioEventDefinition.Name)).stringValue = $"Event {index + 1}";
 			Undo.RecordObject(_settings, "Allocate audio event ID");
 			var eventId = _settings.AllocateEventId();
 			EditorUtility.SetDirty(_settings);
-			SetId(entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Id)), eventId);
-			entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Description)).managedReferenceValue = new AudioEventDescription();
+			SetId(entry.FindPropertyRelative(nameof(AudioEventDefinition.Id)), eventId);
+			entry.FindPropertyRelative(nameof(AudioEventDefinition.Description)).managedReferenceValue = new AudioEventDescription();
 			list.index = index;
 		}
 
@@ -127,13 +127,12 @@ namespace Depra.Sound.Unity.Editor
 
 			var index = entries.arraySize;
 			entries.InsertArrayElementAtIndex(index);
-			var entry = entries.GetArrayElementAtIndex(index);
-			entry.FindPropertyRelative(nameof(AudioContainerEntry.Name)).stringValue = $"Container {index + 1}";
 			Undo.RecordObject(_settings, "Allocate audio container ID");
 			var containerId = _settings.AllocateEventId();
 			EditorUtility.SetDirty(_settings);
-			SetId(entry.FindPropertyRelative(nameof(AudioContainerEntry.Id)), containerId);
-			entry.FindPropertyRelative(nameof(AudioContainerEntry.Container)).objectReferenceValue = null;
+			var entry = entries.GetArrayElementAtIndex(index);
+			SetId(entry.FindPropertyRelative(nameof(AudioContainerDefinition.Id)), containerId);
+			entry.FindPropertyRelative(nameof(AudioContainerDefinition.Container)).objectReferenceValue = null;
 			list.index = index;
 		}
 
@@ -156,7 +155,7 @@ namespace Depra.Sound.Unity.Editor
 				return line + 6f;
 			}
 
-			var propertyName = nameof(CustomAudioBank.EventEntry.Description);
+			var propertyName = nameof(AudioEventDefinition.Description);
 			var description = entry.FindPropertyRelative(propertyName);
 			var descriptionHeight = EditorGUI.GetPropertyHeight(description, new GUIContent(propertyName), true);
 			return line + 2f + line + 2f + descriptionHeight + 8f;
@@ -170,7 +169,7 @@ namespace Depra.Sound.Unity.Editor
 				return line + 6f;
 			}
 
-			return line + 2f + line + 2f + line + 8f;
+			return line + 2f + line + 8f;
 		}
 
 		private void DrawEventRow(Rect rect, SerializedProperty entries, int index)
@@ -185,12 +184,13 @@ namespace Depra.Sound.Unity.Editor
 			{
 				return;
 			}
-			var name = entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Name));
-			var id = entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Id));
+
+			var bankName = entry.FindPropertyRelative(nameof(AudioEventDefinition.Name));
+			var id = entry.FindPropertyRelative(nameof(AudioEventDefinition.Id));
 			var header = new Rect(rect.x, rect.y + 2f, rect.width, EditorGUIUtility.singleLineHeight);
 			var idValue = id.FindPropertyRelative("Value");
 			entry.isExpanded = EditorGUI.Foldout(header, entry.isExpanded,
-				$"{(string.IsNullOrWhiteSpace(name.stringValue) ? $"Event {index + 1}" : name.stringValue)}   (ID {idValue.ulongValue})",
+				$"{(string.IsNullOrWhiteSpace(bankName.stringValue) ? $"Event {index + 1}" : bankName.stringValue)}   (ID {idValue.ulongValue})",
 				true);
 			if (!entry.isExpanded)
 			{
@@ -201,7 +201,7 @@ namespace Depra.Sound.Unity.Editor
 			var indent = rect.x + 14f;
 			var width = rect.width - 14f;
 			var nameRect = new Rect(indent, y, width, EditorGUIUtility.singleLineHeight);
-			EditorGUI.PropertyField(nameRect, name);
+			EditorGUI.PropertyField(nameRect, bankName);
 			y = nameRect.yMax + 2f;
 			var description = entry.FindPropertyRelative("Description");
 			var descriptionHeight = EditorGUI.GetPropertyHeight(description, new GUIContent("Description"), true);
@@ -217,12 +217,13 @@ namespace Depra.Sound.Unity.Editor
 			}
 
 			var entry = entries.GetArrayElementAtIndex(index);
-			var name = entry.FindPropertyRelative(nameof(AudioContainerEntry.Name));
-			var id = entry.FindPropertyRelative(nameof(AudioContainerEntry.Id));
+			var id = entry.FindPropertyRelative(nameof(AudioContainerDefinition.Id));
 			var header = new Rect(rect.x, rect.y + 2f, rect.width, EditorGUIUtility.singleLineHeight);
-			var idValue = id.FindPropertyRelative(nameof(AudioContainerEntry.Id.Value));
+			var idValue = id.FindPropertyRelative(nameof(AudioContainerDefinition.Id.Value));
+			var description = entry.FindPropertyRelative(nameof(AudioContainerDefinition.Container));
+			var name = description.FindPropertyRelative(nameof(AudioEventContainer.name))?.stringValue ?? string.Empty;
 			entry.isExpanded = EditorGUI.Foldout(header, entry.isExpanded,
-				$"{(string.IsNullOrWhiteSpace(name.stringValue) ? $"Container {index + 1}" : name.stringValue)}   (ID {idValue.ulongValue})",
+				$"{(string.IsNullOrWhiteSpace(name) ? $"Container {index + 1}" : name)}   (ID {idValue.ulongValue})",
 				true);
 			if (!entry.isExpanded)
 			{
@@ -232,13 +233,8 @@ namespace Depra.Sound.Unity.Editor
 			var y = header.yMax + 2f;
 			var indent = rect.x + 14f;
 			var width = rect.width - 14f;
-			var nameRect = new Rect(indent, y, width, EditorGUIUtility.singleLineHeight);
-			EditorGUI.PropertyField(nameRect, name);
-			y = nameRect.yMax + 2f;
-			var description = entry.FindPropertyRelative(nameof(AudioContainerEntry.Container));
-			EditorGUI.ObjectField(new Rect(indent, y, width, EditorGUIUtility.singleLineHeight + 2f),
-				description,
-				typeof(AudioEventContainer), GUIContent.none);
+			EditorGUI.ObjectField(new Rect(indent, y, width, EditorGUIUtility.singleLineHeight),
+				description, typeof(AudioEventContainer), GUIContent.none);
 		}
 
 		private static void DeleteArrayElement(SerializedProperty array, int index)
@@ -262,7 +258,7 @@ namespace Depra.Sound.Unity.Editor
 			}
 
 			var search = _eventSearch.Trim();
-			var eventName = eventEntry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Name))?.stringValue;
+			var eventName = eventEntry.FindPropertyRelative(nameof(AudioEventDefinition.Name))?.stringValue;
 			return !string.IsNullOrEmpty(eventName) &&
 			       eventName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
 		}

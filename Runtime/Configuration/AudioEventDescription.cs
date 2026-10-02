@@ -14,21 +14,27 @@ namespace Depra.Sound
 
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
-		private List<IAudioParamDescription> _parameters = new();
+		private List<IAudioParamDescription> _defaultParameters = new();
 
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
-		private List<IAudioEventRequirement> _requirements = new();
+		private List<IAudioParamDescription> _optionalParameters = new();
 
 		public IAudioEventDescription Compile()
 		{
-			var parameters = new AudioParam[_parameters.Count];
-			for (var index = 0; index < parameters.Length; index++)
+			var defaultParams = new AudioParam[_defaultParameters.Count];
+			for (var index = 0; index < defaultParams.Length; index++)
 			{
-				parameters[index] = _parameters[index].Compile();
+				defaultParams[index] = _defaultParameters[index].Compile();
 			}
 
-			return new RuntimeAudioEvent(_clip, new AudioEventRequirements(_requirements), parameters);
+			var optionalParams = new AudioParam[_optionalParameters.Count];
+			for (var index = 0; index < optionalParams.Length; index++)
+			{
+				optionalParams[index] = _optionalParameters[index].Compile();
+			}
+
+			return new RuntimeAudioEvent(_clip, new AudioEventContract(defaultParams, optionalParams));
 		}
 	}
 }

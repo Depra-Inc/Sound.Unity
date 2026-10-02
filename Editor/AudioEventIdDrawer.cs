@@ -77,7 +77,7 @@ namespace Depra.Sound.Unity.Editor
 				return $"Unknown ID ({currentId})";
 			}
 
-			return string.IsNullOrEmpty(option.Label) ? "None" : option.Label;
+			return string.IsNullOrEmpty(option.Label) ? "None" : $"{option.BankName}://{option.Label}";
 		}
 
 		private static void ShowSearchablePopup(Rect activatorRect, List<EventOption> options, SerializedProperty value)
@@ -177,10 +177,7 @@ namespace Depra.Sound.Unity.Editor
 		private sealed class EventDropdownItem : AdvancedDropdownItem
 		{
 			public readonly ulong EventId;
-			public EventDropdownItem(string name, ulong eventId) : base(name)
-			{
-				EventId = eventId;
-			}
+			public EventDropdownItem(string name, ulong eventId) : base(name) => EventId = eventId;
 		}
 	}
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Depra.SerializeReference.Extensions;
 using Depra.Sound.Runtime;
@@ -18,11 +17,11 @@ namespace Depra.Sound
 
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
-		private List<IAudioParamDescription> _parameters;
+		private List<IAudioParamDescription> _defaultParameters;
 
 		[SerializeReferenceDropdown]
 		[UnityEngine.SerializeReference]
-		private List<IAudioEventRequirement> _requirements;
+		private List<IAudioParamDescription> _optionalParameters;
 
 		public IAudioEventDescription Compile()
 		{
@@ -32,28 +31,27 @@ namespace Depra.Sound
 				return null;
 			}
 
-			var parameters = new AudioParam[_parameters.Count];
+			var parameters = new AudioParam[_defaultParameters.Count];
 			for (var index = 0; index < parameters.Length; index++)
 			{
-				parameters[index] = _parameters[index].Compile();
+				parameters[index] = _defaultParameters[index].Compile();
 			}
 
-			return new RuntimeAudioEventContainer(_playbackMode, _clips,
-				new AudioEventRequirements(_requirements), parameters);
+			var optionalParams = new AudioParam[_optionalParameters.Count];
+			for (var index = 0; index < optionalParams.Length; index++)
+			{
+				optionalParams[index] = _optionalParameters[index].Compile();
+			}
+
+			return new RuntimeAudioEventContainer(_playbackMode, _clips.ToArray(),
+				new AudioEventContract(parameters, optionalParams));
 		}
 
 		public enum PlaybackMode
 		{
+			[InspectorName("Bag")] BAG,
 			[InspectorName("Random")] RANDOM,
 			[InspectorName("Sequence")] SEQUENCE
 		}
-	}
-
-	[Serializable]
-	public struct AudioContainerEntry
-	{
-		public string Name;
-		public AudioEventId Id;
-		public AudioEventContainer Container;
 	}
 }

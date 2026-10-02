@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Random = UnityEngine.Random;
 
 namespace Depra.Sound.Runtime
@@ -11,19 +9,17 @@ namespace Depra.Sound.Runtime
 	public sealed class RuntimeAudioEventContainer : IAudioEventDescription
 	{
 		private readonly IAudioClip[] _clips;
-		private readonly AudioParam[] _staticParams;
 		private readonly AudioEventContainer.PlaybackMode _playbackMode;
 
 		private int _nextSequenceIndex;
 		private int _selectedVariantIndex = -1;
 
-		internal RuntimeAudioEventContainer(AudioEventContainer.PlaybackMode playbackMode, List<IAudioClip> clips,
-			IAudioEventContract contract, AudioParam[] staticParams)
+		internal RuntimeAudioEventContainer(AudioEventContainer.PlaybackMode playbackMode, IAudioClip[] clips,
+			IAudioEventContract contract)
 		{
+			_clips = clips;
 			Contract = contract;
-			_clips = clips.ToArray();
 			_playbackMode = playbackMode;
-			_staticParams = staticParams;
 		}
 
 		public IAudioClip Clip
@@ -33,12 +29,6 @@ namespace Depra.Sound.Runtime
 		}
 
 		public IAudioEventContract Contract { get; }
-
-		ReadOnlySpan<AudioParam> IAudioEventDescription.StaticParameters
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _staticParams;
-		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private IAudioClip GetSelectedClip()
