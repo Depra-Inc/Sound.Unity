@@ -75,7 +75,7 @@ namespace Depra.Sound
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(string name, float value) =>
-			AudioParam.LabeledFloat(AudioParamId.Unknown, name, value);
+			AudioParam.NamedFloat(AudioParamId.Unknown, name, value);
 
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}
@@ -90,7 +90,7 @@ namespace Depra.Sound
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(string name, int value) =>
-			AudioParam.LabeledInt(AudioParamId.Unknown, name, value);
+			AudioParam.NamedInt(AudioParamId.Unknown, name, value);
 
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}
@@ -105,7 +105,7 @@ namespace Depra.Sound
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(string name, string value) =>
-			AudioParam.LabeledString(AudioParamId.Unknown, name, value);
+			AudioParam.NamedString(AudioParamId.Unknown, name, value);
 
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}
@@ -114,7 +114,7 @@ namespace Depra.Sound
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(Transform transform) =>
-			AudioParam.CustomRef(UnityAudioParamId.Transform, UnityAudioParamId.Transform, transform);
+			AudioParam.CustomRef(UnityAudioParamId.Transform, transform);
 	}
 
 	public struct PositionParamDescription

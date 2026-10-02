@@ -10,7 +10,7 @@ using static Depra.Sound.Module;
 namespace Depra.Sound
 {
 	[CreateAssetMenu(menuName = MENU_PATH + "Audio Bank", fileName = "New Audio Bank", order = DEFAULT_ORDER)]
-	public sealed class AudioClipBank : AudioBankAsset
+	public sealed class CustomAudioBank : AudioBankAsset
 	{
 		[SerializeField] private List<EventEntry> _events;
 		[SerializeField] private List<AudioContainerEntry> _containers;

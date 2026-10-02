@@ -11,6 +11,6 @@ namespace Depra.Sound
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam.Builder Transform(this AudioParam.Builder self, Transform transform) =>
-			self.Add(AudioParam.CustomRef(UnityAudioParamId.Transform, UnityAudioParamId.Transform, transform));
+			self.Add(AudioParam.CustomRef(UnityAudioParamId.Transform, transform));
 	}
 }

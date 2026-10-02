@@ -5,7 +5,7 @@ using System;
 
 namespace Depra.Sound.Unity.Editor
 {
-	[CustomEditor(typeof(AudioClipBank))]
+	[CustomEditor(typeof(CustomAudioBank))]
 	internal sealed class AudioClipBankEditor : UnityEditor.Editor, IAudioBankEmbeddedEditor
 	{
 		private ReorderableList _events;
@@ -109,12 +109,12 @@ namespace Depra.Sound.Unity.Editor
 			var index = entries.arraySize;
 			entries.InsertArrayElementAtIndex(index);
 			var entry = entries.GetArrayElementAtIndex(index);
-			entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Name)).stringValue = $"Event {index + 1}";
+			entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Name)).stringValue = $"Event {index + 1}";
 			Undo.RecordObject(_settings, "Allocate audio event ID");
 			var eventId = _settings.AllocateEventId();
 			EditorUtility.SetDirty(_settings);
-			SetId(entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Id)), eventId);
-			entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Description)).managedReferenceValue = new AudioEventDescription();
+			SetId(entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Id)), eventId);
+			entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Description)).managedReferenceValue = new AudioEventDescription();
 			list.index = index;
 		}
 
@@ -156,7 +156,7 @@ namespace Depra.Sound.Unity.Editor
 				return line + 6f;
 			}
 
-			var propertyName = nameof(AudioClipBank.EventEntry.Description);
+			var propertyName = nameof(CustomAudioBank.EventEntry.Description);
 			var description = entry.FindPropertyRelative(propertyName);
 			var descriptionHeight = EditorGUI.GetPropertyHeight(description, new GUIContent(propertyName), true);
 			return line + 2f + line + 2f + descriptionHeight + 8f;
@@ -185,8 +185,8 @@ namespace Depra.Sound.Unity.Editor
 			{
 				return;
 			}
-			var name = entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Name));
-			var id = entry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Id));
+			var name = entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Name));
+			var id = entry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Id));
 			var header = new Rect(rect.x, rect.y + 2f, rect.width, EditorGUIUtility.singleLineHeight);
 			var idValue = id.FindPropertyRelative("Value");
 			entry.isExpanded = EditorGUI.Foldout(header, entry.isExpanded,
@@ -262,7 +262,7 @@ namespace Depra.Sound.Unity.Editor
 			}
 
 			var search = _eventSearch.Trim();
-			var eventName = eventEntry.FindPropertyRelative(nameof(AudioClipBank.EventEntry.Name))?.stringValue;
+			var eventName = eventEntry.FindPropertyRelative(nameof(CustomAudioBank.EventEntry.Name))?.stringValue;
 			return !string.IsNullOrEmpty(eventName) &&
 			       eventName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
 		}

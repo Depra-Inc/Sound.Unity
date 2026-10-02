@@ -5,7 +5,7 @@ namespace Depra.Sound.Runtime
 {
 	// Pure POCOs built once from the authoring data at startup,
 	// with no UnityEngine.Object/serialization overhead - safe to read from the hot path.
-	public sealed class RuntimeAudioTable : IAudioTable
+	public sealed class RuntimeAudioTable : IAudioLibrary
 	{
 		private readonly Dictionary<AudioEventId, IAudioEventDescription> _events = new();
 
@@ -21,7 +21,7 @@ namespace Depra.Sound.Runtime
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		bool IAudioTable.TryResolve(AudioEventId eventId, out IAudioEventDescription description) =>
+		bool IAudioLibrary.TryResolve(AudioEventId eventId, out IAudioEventDescription description) =>
 			_events.TryGetValue(eventId, out description);
 	}
 }
