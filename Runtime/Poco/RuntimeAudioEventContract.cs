@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 namespace Depra.Sound
 {
-	public sealed class AudioEventContract : IAudioEventContract
+	public sealed class RuntimeAudioEventContract
 	{
-		public static readonly IAudioEventContract EMPTY = new Empty();
-
 		private readonly AudioParam[] _resultParams;
 		private readonly AudioParam[] _optionalParams;
 		private readonly Dictionary<AudioParamType, int> _optionalIndices;
 
-		public AudioEventContract(AudioParam[] defaultParams, AudioParam[] optionalParams)
+		public RuntimeAudioEventContract(AudioParam[] defaultParams, AudioParam[] optionalParams)
 		{
 			defaultParams ??= Array.Empty<AudioParam>();
 			optionalParams ??= Array.Empty<AudioParam>();
@@ -29,7 +27,7 @@ namespace Depra.Sound
 			}
 		}
 
-		ReadOnlySpan<AudioParam> IAudioEventContract.Merge(ReadOnlySpan<AudioParam> parameters)
+		public ReadOnlySpan<AudioParam> Overlay(ReadOnlySpan<AudioParam> parameters)
 		{
 			var optionalOffset = _resultParams.Length - _optionalParams.Length;
 			_optionalParams.AsSpan().CopyTo(_resultParams.AsSpan(optionalOffset));
@@ -45,30 +43,5 @@ namespace Depra.Sound
 
 			return _resultParams;
 		}
-
-		private sealed class Empty : IAudioEventContract
-		{
-			ReadOnlySpan<AudioParam> IAudioEventContract.Merge(ReadOnlySpan<AudioParam> parameters) => parameters;
-		}
 	}
-
-	// [Serializable]
-	// [SerializeReferenceIcon("d_Transform Icon")]
-	// public struct PositionRequirement : IAudioEventRequirement
-	// {
-	// 	bool IAudioEventRequirement.Validate(ReadOnlySpan<AudioParam> parameters, out string error)
-	// 	{
-	// 		foreach (var parameter in parameters)
-	// 		{
-	// 			if (parameter.Id == UnityAudioParamId.Position || parameter.Id == UnityAudioParamId.Transform)
-	// 			{
-	// 				error = null;
-	// 				return true;
-	// 			}
-	// 		}
-	//
-	// 		error = "A 3D audio event requires a position or transform parameter.";
-	// 		return false;
-	// 	}
-	// }
 }

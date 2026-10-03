@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Depra.Sound.Runtime
@@ -8,10 +9,10 @@ namespace Depra.Sound.Runtime
 	public sealed class RuntimeAudioEvent : IAudioEventDescription
 	{
 		private readonly IAudioClip _clip;
-		private readonly IAudioEventContract _contract;
+		private readonly RuntimeAudioEventContract _contract;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public RuntimeAudioEvent(IAudioClip clip, IAudioEventContract contract)
+		public RuntimeAudioEvent(IAudioClip clip, RuntimeAudioEventContract contract)
 		{
 			_clip = clip;
 			_contract = contract;
@@ -23,10 +24,7 @@ namespace Depra.Sound.Runtime
 			get => _clip;
 		}
 
-		IAudioEventContract IAudioEventDescription.Contract
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _contract;
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ReadOnlySpan<AudioParam> Overlay(ReadOnlySpan<AudioParam> parameters) => _contract.Overlay(parameters);
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Depra.Sound.Runtime
@@ -18,24 +19,17 @@ namespace Depra.Sound.Runtime
 			get => _events.Length > 0 ? _events[0].Clip : null;
 		}
 
-		IAudioEventContract IAudioEventDescription.Contract
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _events.Length > 0 ? _events[0].Contract : AudioEventContract.EMPTY;
-		}
-
-		public int EventCount
+		int IAudioEventBatchDescription.EventCount
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _events.Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IAudioEventDescription GetEvent(int index) =>
+		IAudioEventDescription IAudioEventBatchDescription.GetEvent(int index) =>
 			(uint)index < (uint)_events.Length ? _events[index] : null;
+
+		ReadOnlySpan<AudioParam> IAudioEventDescription.Overlay(ReadOnlySpan<AudioParam> parameters) =>
+			ReadOnlySpan<AudioParam>.Empty;
 	}
 }
-
-
-
-

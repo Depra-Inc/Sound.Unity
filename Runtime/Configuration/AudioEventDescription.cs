@@ -34,7 +34,7 @@ namespace Depra.Sound
 				optionalParams[index] = _optionalParameters[index].Compile();
 			}
 
-			return new RuntimeAudioEvent(_clip, new AudioEventContract(defaultParams, optionalParams));
+			return new RuntimeAudioEvent(_clip, new RuntimeAudioEventContract(defaultParams, optionalParams));
 		}
 	}
 }

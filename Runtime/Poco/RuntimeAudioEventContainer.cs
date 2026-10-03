@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Random = UnityEngine.Random;
 
 namespace Depra.Sound.Runtime
@@ -27,10 +28,14 @@ namespace Depra.Sound.Runtime
 			get => GetSelectedClip();
 		}
 
-		public IAudioEventContract Contract
+		ReadOnlySpan<AudioParam> IAudioEventDescription.Overlay(ReadOnlySpan<AudioParam> parameters)
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => GetSelectedContract();
+			if (_selectedVariantIndex < 0 || _selectedVariantIndex >= _events.Length)
+			{
+				_selectedVariantIndex = SelectVariantIndex();
+			}
+
+			return _events[_selectedVariantIndex].Overlay(parameters);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -38,19 +43,6 @@ namespace Depra.Sound.Runtime
 		{
 			_selectedVariantIndex = SelectVariantIndex();
 			return _selectedVariantIndex >= 0 ? _events[_selectedVariantIndex].Clip : null;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private IAudioEventContract GetSelectedContract()
-		{
-			if (_selectedVariantIndex < 0 || _selectedVariantIndex >= _events.Length)
-			{
-				_selectedVariantIndex = SelectVariantIndex();
-			}
-
-			return _selectedVariantIndex >= 0
-				? _events[_selectedVariantIndex].Contract
-				: AudioEventContract.EMPTY;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
