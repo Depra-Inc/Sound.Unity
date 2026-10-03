@@ -110,17 +110,27 @@ namespace Depra.Sound
 		public readonly AudioParam Compile() => Compile(_name, _value);
 	}
 
-	public struct TransformParamDescription
-	{
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static AudioParam Compile(Transform transform) =>
-			AudioParam.CustomRef(UnityAudioParamId.Transform, transform);
-	}
-
-	public struct PositionParamDescription
+	[Serializable]
+	[SerializeReferenceIcon("d_Transform Icon")]
+	[SerializeReferenceMenuPath("Position Required")]
+	public sealed class PositionParamDescription : IAudioParamDescription
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(Vector3 position) =>
 			AudioParam.Vector3(UnityAudioParamId.Position, position.x, position.y, position.z);
+
+		AudioParam IAudioParamDescription.Compile() => Compile(Vector3.zero);
+	}
+
+	[Serializable]
+	[SerializeReferenceIcon("d_Transform Icon")]
+	[SerializeReferenceMenuPath("Transform Required")]
+	public struct TransformParamDescription : IAudioParamDescription
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static AudioParam Compile(Transform transform) =>
+			AudioParam.CustomRef(UnityAudioParamId.Transform, transform);
+
+		AudioParam IAudioParamDescription.Compile() => Compile(null);
 	}
 }
