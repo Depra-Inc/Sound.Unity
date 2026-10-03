@@ -80,7 +80,7 @@ namespace Depra.Sound.Unity.Builtin
 			{
 				_source.pitch = parameter.FloatValue;
 			}
-			else if (parameterId == UnityAudioParamId.Position && parameter.Type == AudioParamType.VECTOR3)
+			else if (parameterId == UnityAudioParamId.Position && parameter.Type == AudioParamType.FLOAT3)
 			{
 				_source.transform.position = new Vector3(parameter.Float0, parameter.Float1, parameter.Float2);
 			}

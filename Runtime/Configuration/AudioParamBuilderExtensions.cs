@@ -7,7 +7,7 @@ namespace Depra.Sound
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam.Builder Position(this AudioParam.Builder self, Vector3 position) =>
-			self.Add(AudioParam.Vector3(UnityAudioParamId.Position, position.x, position.y, position.z));
+			self.Add(AudioParam.Float3(UnityAudioParamId.Position, position.x, position.y, position.z));
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam.Builder Transform(this AudioParam.Builder self, Transform transform) =>

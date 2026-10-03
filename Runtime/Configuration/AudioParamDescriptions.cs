@@ -117,7 +117,7 @@ namespace Depra.Sound
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(Vector3 position) =>
-			AudioParam.Vector3(UnityAudioParamId.Position, position.x, position.y, position.z);
+			AudioParam.Float3(UnityAudioParamId.Position, position.x, position.y, position.z);
 
 		AudioParam IAudioParamDescription.Compile() => Compile(Vector3.zero);
 	}
