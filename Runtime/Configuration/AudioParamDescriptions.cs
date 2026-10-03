@@ -18,57 +18,57 @@ namespace Depra.Sound
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Volume")]
-	public struct VolumeParamDescription : IAudioParamDescription
+	public sealed class VolumeParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private float _value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(float value) => AudioParam.Float(AudioParamId.Volume, value);
 
-		public readonly AudioParam Compile() => Compile(_value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_value);
 	}
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Loop")]
 	[SerializeReferenceIcon("d_preAudioLoopOff")]
-	public struct LoopParamDescription : IAudioParamDescription
+	public sealed class LoopParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private bool _value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(bool value) => AudioParam.Bool(AudioParamId.Loop, value);
 
-		public readonly AudioParam Compile() => Compile(_value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_value);
 	}
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Pan")]
-	public struct PanParamDescription : IAudioParamDescription
+	public sealed class PanParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private float _value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(float value) => AudioParam.Float(AudioParamId.Pan, value);
 
-		public readonly AudioParam Compile() => Compile(_value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_value);
 	}
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Pitch")]
-	public struct PitchParamDescription : IAudioParamDescription
+	public sealed class PitchParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private float _value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(float value) => AudioParam.Float(AudioParamId.Pitch, value);
 
-		public readonly AudioParam Compile() => Compile(_value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_value);
 	}
 
 	[Serializable]
-	[SerializeReferenceMenuPath("Labeled Float")]
+	[SerializeReferenceMenuPath("Named Float")]
 	[SerializeReferenceIcon("d_FilterByLabel")]
-	public struct LabeledFloatParamDescription : IAudioParamDescription
+	public sealed class NamedFloatParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private string _name;
 		[SerializeField] private float _value;
@@ -77,13 +77,13 @@ namespace Depra.Sound
 		public static AudioParam Compile(string name, float value) =>
 			AudioParam.NamedFloat(AudioParamId.Unknown, name, value);
 
-		public readonly AudioParam Compile() => Compile(_name, _value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_name, _value);
 	}
 
 	[Serializable]
-	[SerializeReferenceMenuPath("Labeled Integer")]
+	[SerializeReferenceMenuPath("Named Integer")]
 	[SerializeReferenceIcon("d_FilterByLabel")]
-	public struct LabeledIntegerParamDescription : IAudioParamDescription
+	public sealed class LabeledIntegerParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private string _name;
 		[SerializeField] private int _value;
@@ -92,13 +92,13 @@ namespace Depra.Sound
 		public static AudioParam Compile(string name, int value) =>
 			AudioParam.NamedInt(AudioParamId.Unknown, name, value);
 
-		public readonly AudioParam Compile() => Compile(_name, _value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_name, _value);
 	}
 
 	[Serializable]
 	[SerializeReferenceMenuPath("Labeled String")]
 	[SerializeReferenceIcon("d_FilterByLabel")]
-	public struct LabeledStringParamDescription : IAudioParamDescription
+	public sealed class LabeledStringParamDescription : IAudioParamDescription
 	{
 		[SerializeField] private string _name;
 		[SerializeField] private string _value;
@@ -107,7 +107,7 @@ namespace Depra.Sound
 		public static AudioParam Compile(string name, string value) =>
 			AudioParam.NamedString(AudioParamId.Unknown, name, value);
 
-		public readonly AudioParam Compile() => Compile(_name, _value);
+		AudioParam IAudioParamDescription.Compile() => Compile(_name, _value);
 	}
 
 	[Serializable]
@@ -125,7 +125,7 @@ namespace Depra.Sound
 	[Serializable]
 	[SerializeReferenceIcon("d_Transform Icon")]
 	[SerializeReferenceMenuPath("Transform Required")]
-	public struct TransformParamDescription : IAudioParamDescription
+	public sealed class TransformParamDescription : IAudioParamDescription
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static AudioParam Compile(Transform transform) =>

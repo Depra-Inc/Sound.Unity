@@ -1,5 +1,5 @@
 ﻿// SPDX-License-Identifier: Apache-2.0
-// © 2024 Nikolay Melnikov <n.melnikov@depra.org>
+// © 2024-2026 Depra <n.melnikov@depra.org>
 
 using System;
 using UnityEngine;
@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Depra.Sound.Source
 {
 	[Serializable]
-	public sealed class SceneAudioSourceRef : IAudioSource, IAudioSourceFactory
+	public sealed class SceneAudioSourceRef : IAudioSource
 	{
 		[SerializeField] private SceneAudioSource _gameObject;
 		private IAudioSource _source;
@@ -33,8 +33,5 @@ namespace Depra.Sound.Source
 		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> parameters) => Source?.Play(clip, parameters);
 
 		void IAudioSource.Stop() => Source?.Stop();
-
-		IAudioSource IAudioSourceFactory.Create() => Source;
-		void IAudioSourceFactory.Destroy(IAudioSource source) { }
 	}
 }
