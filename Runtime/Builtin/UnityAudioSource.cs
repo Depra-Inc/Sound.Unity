@@ -44,17 +44,12 @@ namespace Depra.Sound.Unity.Builtin
 #endif
 		}
 
-		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> staticParams, ReadOnlySpan<AudioParam> dynamicParams)
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> parameters)
 		{
 			Guard.AgainstUnsupportedType(clip, SUPPORTED_CLIP);
 			Source.clip = _current = (UnityAudioClip)clip;
 
-			foreach (var parameter in staticParams)
-			{
-				SetParameter(parameter);
-			}
-
-			foreach (var parameter in dynamicParams)
+			foreach (var parameter in parameters)
 			{
 				SetParameter(parameter);
 			}

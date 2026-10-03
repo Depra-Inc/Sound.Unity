@@ -44,10 +44,10 @@ namespace Depra.Sound
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}
 
-		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> staticParams, ReadOnlySpan<AudioParam> dynamicParams)
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> parameters)
 		{
 			TryStopSelfDestroy();
-			_source.Play(clip, staticParams, dynamicParams);
+			_source.Play(clip, parameters);
 			var threshold = clip.Duration + _threshold;
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}

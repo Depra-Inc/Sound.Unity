@@ -1,37 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Depra.Sound
 {
-	public sealed class EmptyContract : IAudioEventContract
-	{
-		ReadOnlySpan<AudioParam> IAudioEventContract.GetDefaultParameters() => ReadOnlySpan<AudioParam>.Empty;
-		ReadOnlySpan<AudioParam> IAudioEventContract.Apply(ReadOnlySpan<AudioParam> parameters) => parameters;
-	}
-
 	public sealed class AudioEventContract : IAudioEventContract
 	{
 		public static readonly IAudioEventContract EMPTY = new Empty();
 
-		private readonly AudioParam[] _defaultParams;
+		private readonly AudioParam[] _resultParams;
 		private readonly AudioParam[] _optionalParams;
+		private readonly Dictionary<AudioParamType, int> _optionalIndices;
 
 		public AudioEventContract(AudioParam[] defaultParams, AudioParam[] optionalParams)
 		{
-			_defaultParams = defaultParams;
 			_optionalParams = optionalParams;
+			_resultParams = new AudioParam[defaultParams.Length + optionalParams.Length];
+
+			defaultParams.AsSpan().CopyTo(_resultParams);
+			optionalParams.AsSpan().CopyTo(_resultParams.AsSpan(defaultParams.Length));
+
+			_optionalIndices = new Dictionary<AudioParamType, int>(optionalParams.Length);
+			for (var index = 0; index < optionalParams.Length; index++)
+			{
+				_optionalIndices.Add(optionalParams[index].Type, index);
+			}
 		}
 
-		ReadOnlySpan<AudioParam> IAudioEventContract.GetDefaultParameters() => _defaultParams.AsSpan();
-
-		public ReadOnlySpan<AudioParam> Apply(ReadOnlySpan<AudioParam> parameters)
+		ReadOnlySpan<AudioParam> IAudioEventContract.Merge(ReadOnlySpan<AudioParam> parameters)
 		{
-			return parameters;
+			var optionalOffset = _resultParams.Length - _optionalParams.Length;
+			_optionalParams.AsSpan().CopyTo(_resultParams.AsSpan(optionalOffset));
+
+			for (int index = 0, count = parameters.Length; index < count; index++)
+			{
+				var parameter = parameters[index];
+				if (_optionalIndices.TryGetValue(parameter.Type, out var optionalIndex))
+				{
+					_resultParams[optionalOffset + optionalIndex] = parameter;
+				}
+			}
+
+			return _resultParams;
 		}
 
 		private sealed class Empty : IAudioEventContract
 		{
-			ReadOnlySpan<AudioParam> IAudioEventContract.GetDefaultParameters() => ReadOnlySpan<AudioParam>.Empty;
-			ReadOnlySpan<AudioParam> IAudioEventContract.Apply(ReadOnlySpan<AudioParam> parameters) => parameters;
+			ReadOnlySpan<AudioParam> IAudioEventContract.Merge(ReadOnlySpan<AudioParam> parameters) => parameters;
 		}
 	}
 
