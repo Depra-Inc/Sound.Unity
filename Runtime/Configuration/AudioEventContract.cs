@@ -13,6 +13,9 @@ namespace Depra.Sound
 
 		public AudioEventContract(AudioParam[] defaultParams, AudioParam[] optionalParams)
 		{
+			defaultParams ??= Array.Empty<AudioParam>();
+			optionalParams ??= Array.Empty<AudioParam>();
+
 			_optionalParams = optionalParams;
 			_resultParams = new AudioParam[defaultParams.Length + optionalParams.Length];
 
