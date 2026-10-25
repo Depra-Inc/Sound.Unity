@@ -3,11 +3,10 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Depra.Sound.Module;
 
-namespace Depra.Sound.Source
+namespace Depra.Sound
 {
 	[AddComponentMenu(MENU_PATH + nameof(OneTimeAudioSource), DEFAULT_ORDER)]
 	public sealed class OneTimeAudioSource : MonoBehaviour, IAudioSource
@@ -36,17 +35,24 @@ namespace Depra.Sound.Source
 
 		bool IAudioSource.IsPlaying => _source.IsPlaying;
 		IAudioClip IAudioSource.Current => _source.Current;
-		IEnumerable<Type> IAudioSource.SupportedClips => _source.SupportedClips;
 
-		public void Stop() => _source.Stop();
+		public void Play(IAudioClip clip)
+		{
+			TryStopSelfDestroy();
+			_source.Play(clip);
+			var threshold = clip.Duration + _threshold;
+			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
+		}
 
-		public void Play(IAudioClip clip, IList<IAudioSourceParameter> parameters)
+		public void Play(IAudioClip clip, ReadOnlySpan<AudioParam> parameters)
 		{
 			TryStopSelfDestroy();
 			_source.Play(clip, parameters);
 			var threshold = clip.Duration + _threshold;
 			_selfDestroyCoroutine = StartCoroutine(SelfDestroy(threshold));
 		}
+
+		public void Stop() => _source.Stop();
 
 		private IEnumerator SelfDestroy(float duration)
 		{
@@ -63,9 +69,5 @@ namespace Depra.Sound.Source
 				StopCoroutine(_selfDestroyCoroutine);
 			}
 		}
-
-		bool IAudioSource.Write(IAudioSourceParameter parameter) => _source.Write(parameter);
-		IAudioSourceParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
-		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}
 }

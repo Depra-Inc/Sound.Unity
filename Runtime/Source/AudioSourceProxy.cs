@@ -2,7 +2,6 @@
 // © 2024 Nikolay Melnikov <n.melnikov@depra.org>
 
 using System;
-using System.Collections.Generic;
 using Depra.SerializeReference.Extensions;
 using UnityEngine;
 using static Depra.Sound.Module;
@@ -30,13 +29,11 @@ namespace Depra.Sound.Source
 
 		bool IAudioSource.IsPlaying => _source.IsPlaying;
 		IAudioClip IAudioSource.Current => _source.Current;
-		IEnumerable<Type> IAudioSource.SupportedClips => _source.SupportedClips;
+
+		void IAudioSource.Play(IAudioClip clip) => _source.Play(clip);
+
+		void IAudioSource.Play(IAudioClip clip, ReadOnlySpan<AudioParam> parameters) => _source.Play(clip, parameters);
 
 		void IAudioSource.Stop() => _source.Stop();
-		void IAudioSource.Play(IAudioClip clip, IList<IAudioSourceParameter> parameters) => _source.Play(clip, parameters);
-
-		bool IAudioSource.Write(IAudioSourceParameter parameter) => _source.Write(parameter);
-		IAudioSourceParameter IAudioSource.Read(Type parameterType) => _source.Read(parameterType);
-		IEnumerable<IAudioSourceParameter> IAudioSource.EnumerateParameters() => _source.EnumerateParameters();
 	}
 }
