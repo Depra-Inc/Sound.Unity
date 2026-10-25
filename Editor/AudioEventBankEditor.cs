@@ -221,7 +221,8 @@ namespace Depra.Sound.Unity.Editor
 			var header = new Rect(rect.x, rect.y + 2f, rect.width, EditorGUIUtility.singleLineHeight);
 			var idValue = id.FindPropertyRelative(nameof(AudioContainerDefinition.Id.Value));
 			var description = entry.FindPropertyRelative(nameof(AudioContainerDefinition.Container));
-			var name = description.FindPropertyRelative(nameof(AudioEventContainer.name))?.stringValue ?? string.Empty;
+			var container = description.objectReferenceValue as AudioEventContainer;
+			var name = container ? container.name : string.Empty;
 			entry.isExpanded = EditorGUI.Foldout(header, entry.isExpanded,
 				$"{(string.IsNullOrWhiteSpace(name) ? $"Container {index + 1}" : name)}   (ID {idValue.ulongValue})",
 				true);
